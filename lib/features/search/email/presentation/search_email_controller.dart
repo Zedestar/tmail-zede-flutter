@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
@@ -88,7 +89,8 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 class SearchEmailController extends BaseController
     with EmailActionController,
         DateRangePickerMixin,
-        SearchLabelFilterModalMixin {
+        SearchLabelFilterModalMixin,
+        LabelSubMenuMixin {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
