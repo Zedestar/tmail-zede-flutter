@@ -5776,4 +5776,11 @@ class AppLocalizations {
       name: 'labelDescriptionHintText',
     );
   }
+
+  String get chooseLabel {
+    return Intl.message(
+      'Choose label',
+      name: 'chooseLabel',
+    );
+  }
 }

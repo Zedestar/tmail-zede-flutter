@@ -5459,5 +5459,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "chooseLabel": "Choose label",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
