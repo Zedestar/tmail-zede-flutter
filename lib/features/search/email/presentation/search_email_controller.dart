@@ -1059,6 +1059,8 @@ class SearchEmailController extends BaseController
           selectedEmails: listEmails,
           imagePaths: imagePaths,
           onCallBackAction: cancelSelectionMode,
+          onCreateALabelAction: () => mailboxDashBoardController.labelController
+              .openCreateNewLabelModal(accountId),
         );
         break;
       default:

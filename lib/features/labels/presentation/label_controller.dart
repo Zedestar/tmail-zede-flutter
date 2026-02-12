@@ -146,15 +146,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
         : ExpandMode.COLLAPSE;
   }
 
-  Future<void> openCreateNewLabelModal(AccountId? accountId) async {
-    if (accountId == null) {
-      consumeState(
-        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
-      );
-      return;
-    }
-
-    await DialogRouter().openDialogModal(
+  Future<Label?> openCreateNewLabelModal(AccountId? accountId) async {
+    return await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
         key: const Key('create_new_label_modal'),
         labels: labels,
@@ -164,24 +157,34 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     );
   }
 
-  void _createNewLabel(AccountId accountId, Label label) {
+  void _createNewLabel(AccountId? accountId, Label label) {
     log('LabelController::_createNewLabel:Label: $label');
+    if (accountId == null) {
+      consumeState(
+        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
+      );
+      return;
+    }
+
     if (_createNewLabelInteractor == null) {
       consumeState(
         Stream.value(Left(CreateNewLabelFailure(const InteractorNotInitialized()))),
       );
-    } else {
-      consumeState(_createNewLabelInteractor!.execute(accountId, label));
+      return;
     }
+
+    consumeState(_createNewLabelInteractor!.execute(accountId, label));
   }
 
   void _handleCreateNewLabelSuccess(CreateNewLabelSuccess success) {
     toastManager.showMessageSuccess(success);
     _addLabelToList(success.newLabel);
+    popBack(result: success.newLabel);
   }
 
   void _handleCreateNewLabelFailure(CreateNewLabelFailure failure) {
     toastManager.showMessageFailure(failure);
+    popBack();
   }
 
   void _addLabelToList(Label newLabel) {
