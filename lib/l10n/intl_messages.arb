@@ -5507,5 +5507,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "labelMessage": "Label message",
+  "@labelMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "as": "as",
+  "@as": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

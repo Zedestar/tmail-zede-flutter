@@ -1054,7 +1054,7 @@ class SearchEmailController extends BaseController
         unSpamSelectedMultipleEmail(listEmails);
         break;
       case EmailActionType.labelAs:
-        mailboxDashBoardController.openChooseLabelModal(
+        mailboxDashBoardController.addLabelsToEmailsAction(
           labels: mailboxDashBoardController.labelController.labels,
           selectedEmails: listEmails,
           imagePaths: imagePaths,

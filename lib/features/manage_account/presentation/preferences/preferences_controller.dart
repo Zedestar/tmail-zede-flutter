@@ -125,6 +125,8 @@ class PreferencesController extends BaseController {
 
   void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {
     localSettings.value = preferencesSetting;
+    accountDashboardController.isLabelAvailable.value =
+        preferencesSetting.labelConfig.isEnabled;
   }
 
   void _getSettingOption() {

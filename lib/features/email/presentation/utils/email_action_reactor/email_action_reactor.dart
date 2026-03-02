@@ -293,12 +293,14 @@ class EmailActionReactor with LabelSubMenuMixin {
     Session session,
     AccountId accountId, {
     required EmailAddress? emailAddress,
+    required bool isLabelAvailable,
   }) async* {
     Get.back();
     final arguments = RulesFilterCreatorArguments(
       accountId,
       session,
       emailAddress: emailAddress,
+      isLabelAvailable: isLabelAvailable,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
@@ -626,6 +628,7 @@ class EmailActionReactor with LabelSubMenuMixin {
   Future<void> openEmailAddressDialog(
     Session session,
     AccountId accountId, {
+    required bool isLabelAvailable,
     required EmailAddress emailAddress,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
@@ -650,8 +653,13 @@ class EmailActionReactor with LabelSubMenuMixin {
               onComposeEmailFromEmailAddressRequest(emailAddress),
           onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
               onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
-          ),
+                quickCreateRule(
+                  session,
+                  accountId,
+                  emailAddress: emailAddress,
+                  isLabelAvailable: isLabelAvailable,
+                ),
+              ),
         ),
         useRootNavigator: true,
         shape: const RoundedRectangleBorder(
@@ -676,8 +684,13 @@ class EmailActionReactor with LabelSubMenuMixin {
               onComposeEmailFromEmailAddressRequest(emailAddress),
           onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
               onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
-          ),
+                quickCreateRule(
+                  session,
+                  accountId,
+                  emailAddress: emailAddress,
+                  isLabelAvailable: isLabelAvailable,
+                ),
+              ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
