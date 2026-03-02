@@ -92,6 +92,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_ident
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/add_label_to_email_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/add_list_labels_to_list_emails_mixin.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/create_new_label_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
@@ -244,6 +245,7 @@ class MailboxDashBoardController extends ReloadableController
         SearchLabelFilterModalMixin,
         AddLabelToEmailMixin,
         LabelModalMixin,
+        CreateNewLabelMixin,
         AddListLabelsToListEmailsMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();

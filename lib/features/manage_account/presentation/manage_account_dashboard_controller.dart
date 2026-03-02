@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_pi
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -69,6 +70,8 @@ class ManageAccountDashBoardController extends ReloadableController
   UpdateVacationInteractor? _updateVacationInteractor;
   PaywallController? paywallController;
   GetQuotasInteractor? getQuotasInteractor;
+
+  final labelController = Get.find<LabelController>();
 
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;

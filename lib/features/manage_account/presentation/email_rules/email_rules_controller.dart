@@ -95,10 +95,17 @@ class EmailRulesController extends BaseController {
     final accountId = _accountDashBoardController.accountId.value;
     final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
+      final labelController = _accountDashBoardController.labelController;
+      final isLabelAvailable =
+          _accountDashBoardController.isLabelAvailable.value;
+
       final arguments = RulesFilterCreatorArguments(
         accountId,
         session,
-        isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+        isLabelAvailable: isLabelAvailable,
+        allLabels: labelController.labels,
+        createNewLabelInteractor: labelController.createNewLabelInteractor,
+        editLabelInteractor: labelController.editLabelInteractor,
       );
 
       final newRuleFilterRequest = PlatformInfo.isWeb
@@ -142,6 +149,11 @@ class EmailRulesController extends BaseController {
         actionType: CreatorActionType.edit,
         tMailRule: rule,
         isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+        allLabels: _accountDashBoardController.labelController.labels,
+        createNewLabelInteractor: _accountDashBoardController
+            .labelController.createNewLabelInteractor,
+        editLabelInteractor:
+            _accountDashBoardController.labelController.editLabelInteractor,
       );
 
       final newRuleFilterRequest = PlatformInfo.isWeb

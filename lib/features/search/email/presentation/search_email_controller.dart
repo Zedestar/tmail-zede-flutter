@@ -1054,13 +1054,15 @@ class SearchEmailController extends BaseController
         unSpamSelectedMultipleEmail(listEmails);
         break;
       case EmailActionType.labelAs:
+        final labelController = mailboxDashBoardController.labelController;
+
         mailboxDashBoardController.addLabelsToEmailsAction(
-          labels: mailboxDashBoardController.labelController.labels,
+          labels: labelController.labels,
           selectedEmails: listEmails,
           imagePaths: imagePaths,
           onCallBackAction: cancelSelectionMode,
-          onCreateALabelAction: () => mailboxDashBoardController.labelController
-              .openCreateNewLabelModal(accountId),
+          createNewLabelInteractor: labelController.createNewLabelInteractor,
+          editLabelInteractor: labelController.editLabelInteractor,
         );
         break;
       default:
