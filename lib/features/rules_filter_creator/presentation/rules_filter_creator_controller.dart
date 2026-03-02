@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
@@ -88,6 +89,10 @@ class RulesFilterCreatorController extends BaseMailboxController
   bool get isLabelAvailable => _isLabelAvailable;
 
   AccountId? get accountId => _accountId;
+
+  void setLabelSelected(List<Label> labels) {
+    _labelsSelected = labels;
+  }
 
   int get maxCountAction {
     final countActionSupported = EmailRuleFilterAction.values
@@ -589,11 +594,25 @@ class RulesFilterCreatorController extends BaseMailboxController
           return;
         }
       }
+      if (ruleFilterAction is LabelMessageActionArguments) {
+        final errorAction = _getErrorStringByInputValue(
+          appLocalizations,
+          _labelsSelected?.displayNameAsString,
+        );
+        if (errorAction?.isNotEmpty == true) {
+          appToast.showToastErrorMessage(
+            context,
+            appLocalizations.pleaseSelectALabelToAddLabelTheMessage,
+          );
+          return;
+        }
+      }
     }
 
     late EquatableMixin ruleFilterRequest;
 
     List<MailboxId> mailboxIds = [];
+    List<String> labelKeywords = [];
     bool markAsSeen = false;
     bool markAsImportant = false;
     bool reject = false;
@@ -619,6 +638,11 @@ class RulesFilterCreatorController extends BaseMailboxController
         markAsSeen = false;
         markAsImportant = false;
       }
+      if (ruleFilterAction is LabelMessageActionArguments) {
+        final keywordListString =
+            ruleFilterAction.labels?.keywordListString ?? [];
+        labelKeywords.addAll(keywordListString);
+      }
     }
 
     if (actionType.value == CreatorActionType.create) {
@@ -632,6 +656,7 @@ class RulesFilterCreatorController extends BaseMailboxController
           markAsSeen: markAsSeen,
           markAsImportant: markAsImportant,
           reject: reject,
+          withKeywords: labelKeywords,
         ),
         conditionGroup: RuleConditionGroup(
           conditionCombiner: conditionCombinerType.value!,
@@ -650,6 +675,7 @@ class RulesFilterCreatorController extends BaseMailboxController
           markAsSeen: markAsSeen,
           markAsImportant: markAsImportant,
           reject: reject,
+          withKeywords: labelKeywords,
         ),
         conditionGroup: RuleConditionGroup(
           conditionCombiner: conditionCombinerType.value!,
