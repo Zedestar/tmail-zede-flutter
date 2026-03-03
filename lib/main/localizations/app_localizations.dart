@@ -5776,4 +5776,11 @@ class AppLocalizations {
       name: 'labelDescriptionHintText',
     );
   }
+
+  String get events {
+    return Intl.message(
+      'Events',
+      name: 'events',
+    );
+  }
 }
