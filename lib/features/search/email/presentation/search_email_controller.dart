@@ -640,10 +640,10 @@ class SearchEmailController extends BaseController
     _searchEmailAction();
   }
 
-  void selectStarredSearchFilter() {
+  void selectKeywordsSearchFilter(KeyWordIdentifier keyword) {
     final listKeyword = listHasKeywordFiltered;
-    if (!listKeyword.contains(KeyWordIdentifier.emailFlagged.value)) {
-      listKeyword.add(KeyWordIdentifier.emailFlagged.value);
+    if (!listKeyword.contains(keyword.value)) {
+      listKeyword.add(keyword.value);
     }
     _updateSimpleSearchFilter(hasKeywordOption: Some(listKeyword));
     _searchEmailAction();
@@ -651,13 +651,6 @@ class SearchEmailController extends BaseController
 
   void selectUnreadSearchFilter() {
     _updateSimpleSearchFilter(unreadOption: const Some(true));
-    _searchEmailAction();
-  }
-
-  void selectEventsSearchFilter() {
-    _updateSimpleSearchFilter(
-      headerOption: const Some(<String>{SearchEmailFilter.eventsHeaderKey}),
-    );
     _searchEmailAction();
   }
 
@@ -809,7 +802,6 @@ class SearchEmailController extends BaseController
     Option<Set<String>>? hasKeywordOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
-    Option<Set<String>>? headerOption,
   }) => _updateSimpleSearchFilter(
     fromOption: fromOption,
     toOption: toOption,
@@ -825,7 +817,6 @@ class SearchEmailController extends BaseController
     hasKeywordOption: hasKeywordOption,
     sortOrderTypeOption: sortOrderTypeOption,
     labelOption: labelOption,
-    headerOption: headerOption,
   );
 
   void _updateSimpleSearchFilter({
@@ -843,7 +834,6 @@ class SearchEmailController extends BaseController
     Option<Set<String>>? hasKeywordOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
-    Option<Set<String>>? headerOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -860,7 +850,6 @@ class SearchEmailController extends BaseController
       hasKeywordOption: hasKeywordOption,
       sortOrderTypeOption: sortOrderTypeOption,
       labelOption: labelOption,
-      headerOption: headerOption,
     );
     searchEmailFilter.refresh();
   }
@@ -1161,7 +1150,7 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteEventsSearchFilter() {
-    _updateSimpleSearchFilter(headerOption: const None());
+    _updateSimpleSearchFilter(hasKeywordOption: const None());
     _searchEmailAction();
   }
 

@@ -5465,11 +5465,5 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "hasEvents": "Has events",
-  "@hasEvents": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   }
 }
