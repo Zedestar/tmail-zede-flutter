@@ -98,15 +98,6 @@ extension HandleLabelActionTypeExtension on LabelController {
     labels.sortByAlphabetically();
   }
 
-  void handleEditLabelSuccess(EditLabelSuccess success) {
-    toastManager.showMessageSuccess(success);
-    syncListLabels(success.newLabel);
-  }
-
-  void handleEditLabelFailure(EditLabelFailure failure) {
-    toastManager.showMessageFailure(failure);
-  }
-
   Future<void> _openDeleteLabelModal({
     required BuildContext context,
     required AccountId? accountId,
