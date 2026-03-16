@@ -410,6 +410,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
         newDestroyed: response.notFoundEmailIds,
       );
     }
+    logTrace(
+      'ThreadRepositoryImpl::loadMoreEmails(): emailList = ${response.emailList?.length},'
+      'notFoundEmailIds = ${response.notFoundEmailIds?.length}, '
+      'existNotFoundEmails = ${response.existNotFoundEmails}, '
+      'state = ${response.state?.value}',
+    );
     yield response;
   }
 

@@ -834,7 +834,13 @@ class ThreadController extends BaseController with EmailActionController {
       final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
-      log('ThreadController::_loadMoreEmails: OldestEmailID = ${oldestEmail?.id?.asString}');
+      final useCache = selectedMailbox?.isCacheable ?? false;
+      final filterOption = mailboxDashBoardController.filterMessageOption.value;
+      logTrace(
+        'ThreadController::_loadMoreEmails: OldestEmailID = ${oldestEmail?.id?.asString}, '
+        'useCache = $useCache, '
+        'filterOption = ${filterOption.name}',
+      );
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
@@ -876,7 +882,10 @@ class ThreadController extends BaseController with EmailActionController {
     canLoadMore = success.emailList.isNotEmpty;
     loadingMoreStatus.value = LoadingMoreStatus.completed;
     final appendableList = validateListEmailsLoadMore(success.emailList);
-    log('ThreadController::_loadMoreEmailsSuccess: emailList = ${success.emailList.length} | appendableList = ${appendableList.length}');
+    logTrace(
+      'ThreadController::_loadMoreEmailsSuccess: emailList = ${success.emailList.length}, '
+      'appendableList = ${appendableList.length}',
+    );
     if (appendableList.isNotEmpty) {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
