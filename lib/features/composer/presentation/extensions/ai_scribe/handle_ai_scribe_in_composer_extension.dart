@@ -100,17 +100,17 @@ extension HandleAiScribeInComposerExtension on ComposerController {
           HtmlUtils.saveSelection.name,
           hasReturnValue: true,
         );
-        return result;
+        return result?.toString() ?? '';
       } else {
         final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
             .evaluateJavascript(
           source: HtmlUtils.saveSelection.script,
         );
-        return result;
+        return result?.toString() ?? '';
       }
     } catch (e) {
       logWarning('$runtimeType::saveSelection:Exception = $e');
-      return "";
+      return '';
     }
   }
 
@@ -121,17 +121,17 @@ extension HandleAiScribeInComposerExtension on ComposerController {
           HtmlUtils.restoreSelection.name,
           hasReturnValue: true,
         );
-        return result;
+        return result?.toString() ?? '';
       } else {
         final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
             .evaluateJavascript(
           source: HtmlUtils.restoreSelection.script,
         );
-        return result;
+        return result?.toString() ?? '';
       }
     } catch (e) {
       logWarning('$runtimeType::restoreSelection:Exception = $e');
-      return "";
+      return '';
     }
   }
 
@@ -142,17 +142,17 @@ extension HandleAiScribeInComposerExtension on ComposerController {
           HtmlUtils.getSavedSelection.name,
           hasReturnValue: true,
         );
-        return result;
+        return result?.toString() ?? '';
       } else {
         final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
             .evaluateJavascript(
           source: HtmlUtils.getSavedSelection.script,
         );
-        return result;
+        return result?.toString() ?? '';
       }
     } catch (e) {
       logWarning('$runtimeType::getSavedSelection:Exception = $e');
-      return "";
+      return '';
     }
   }
 
@@ -176,12 +176,16 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   }
 
   Future<void> unfocusEditor() async {
-    final editorApi = richTextMobileTabletController?.htmlEditorApi;
-    if (PlatformInfo.isIOS) {
-      await editorApi?.unfocus();
-    } else if (PlatformInfo.isAndroid) {
-      await editorApi?.hideKeyboard();
-      await editorApi?.unfocus();
+    try {
+      final editorApi = richTextMobileTabletController?.htmlEditorApi;
+      if (PlatformInfo.isIOS) {
+        await editorApi?.unfocus();
+      } else if (PlatformInfo.isAndroid) {
+        await editorApi?.hideKeyboard();
+        await editorApi?.unfocus();
+      }
+    } catch (e) {
+      logWarning('$runtimeType::unfocusEditor:Exception = $e');
     }
   }
 
@@ -239,7 +243,8 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     clearFocusRecipients();
     clearFocusSubject();
 
-    if (isScribeMobile) {
+    final scribeMobile = isScribeMobile;
+    if (scribeMobile) {
       await saveAndUnfocusForModal();
     }
 
@@ -254,7 +259,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       preferredPlacement: ModalPlacement.top,
       crossAxisAlignment: ModalCrossAxisAlignment.start,
       onSelectAiScribeSuggestionAction: handleAiScribeSuggestionAction,
-      isScribeMobile: isScribeMobile,
+      isScribeMobile: scribeMobile,
     );
   }
 

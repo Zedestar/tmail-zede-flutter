@@ -1,4 +1,4 @@
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 
 class PromptData {
   final List<Prompt> prompts;
@@ -9,13 +9,13 @@ class PromptData {
 
 factory PromptData.fromJson(Map<String, dynamic> json) {
     final promptsJson = json['prompts'] as List?;
-    
+
     return PromptData(
       prompts: promptsJson
             ?.whereType<Map<String, dynamic>>()
-            .map(Prompt.fromJson) 
+            .map(Prompt.fromJson)
             .toList() ??
-          const [], 
+          const [],
     );
   }
 }
@@ -34,15 +34,15 @@ class Prompt {
     if (name is! String) {
       throw const FormatException('Prompt name must be a non-null String');
     }
-    
+
     final messagesJson = json['messages'] as List?;
-        
+
     return Prompt(
       name: name,
       messages: messagesJson
               ?.whereType<Map<String, dynamic>>()
               .map(AIMessage.fromJson)
-              .toList() ?? 
+              .toList() ??
           const [],
     );
   }
@@ -50,20 +50,18 @@ class Prompt {
   List<AIMessage> buildPrompt(String inputText, {String? task}) {
     return [
       for (final message in messages)
-        if (message.role == AIRole.system)
-          AIMessage.ofSystem(message.content)
-        else if (message.role == AIRole.user)
-          AIMessage.ofUser(_replacePlaceholders(message.content, inputText, task))
+        switch (message.role) {
+          AIRole.system => AIMessage.ofSystem(message.content),
+          AIRole.user => AIMessage.ofUser(
+              _replacePlaceholders(message.content, inputText, task),
+            ),
+        }
     ];
   }
 
   String _replacePlaceholders(String content, String inputText, String? task) {
-    var result = content.replaceAll('{{input}}', inputText);
-    
-    if (task != null) {
-      result = result.replaceAll('{{task}}', task);
-    }
-    
+    var result = content.replaceAll(RegExp(r'\{\{\s*input\s*\}\}'), inputText);
+    result = result.replaceAll(RegExp(r'\{\{\s*task\s*\}\}'), task ?? '');
     return result;
   }
 }

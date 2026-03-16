@@ -58,7 +58,7 @@ class _AiScribeMobileActionsBottomSheetState
                 ? TMailButtonWidget.fromIcon(
                   icon: widget.imagePaths.icArrowBackIos,
                   backgroundColor: Colors.transparent,
-                  iconSize: AIScribeSizes.bottomsheetIcon,
+                  iconSize: AIScribeSizes.bottomSheetIcon,
                   iconColor: AIScribeColors.secondaryIcon,
                   padding: AIScribeSizes.backIconPadding,
                   onTapActionCallback: _goBackToCategories
@@ -80,7 +80,7 @@ class _AiScribeMobileActionsBottomSheetState
           TMailButtonWidget.fromIcon(
             icon: widget.imagePaths.icCloseDialog,
             backgroundColor: Colors.transparent,
-            iconSize: AIScribeSizes.bottomsheetIcon,
+            iconSize: AIScribeSizes.bottomSheetIcon,
             iconColor: AIScribeColors.secondaryIcon,
             onTapActionCallback: () => Navigator.of(context).pop()
           )
@@ -126,13 +126,7 @@ class _AiScribeMobileActionsBottomSheetState
     );
   }
 
-  Widget _buildTextCard(BuildContext context) {
-    final displayText = widget.content;
-
-    if (displayText == null || displayText.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
+  Widget _buildTextCard(String displayText) {
     return Container(
       margin: AIScribeSizes.contentCardMargin,
       constraints: const BoxConstraints(
@@ -205,14 +199,14 @@ class _AiScribeMobileActionsBottomSheetState
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildHeader(context, localizations),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildTextCard(context),
-                            if(hasContent)
+                    if (hasContent)
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildTextCard(widget.content ?? ''),
                               ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
                                 valueListenable: _selectedCategory,
                                 builder: (context, selectedCategory, _) {
@@ -221,10 +215,10 @@ class _AiScribeMobileActionsBottomSheetState
                                       : _buildSubmenuListView();
                                 },
                               ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     _buildBottomBar(context)
                   ],
                 ),

@@ -20,7 +20,7 @@ class AiScribeSuggestionSuccessToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appToast = Get.find<AppToast>();
+    final appToast = Get.isRegistered<AppToast>() ? Get.find<AppToast>() : null;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -33,7 +33,7 @@ class AiScribeSuggestionSuccessToolbar extends StatelessWidget {
           tooltipMessage: ScribeLocalizations.of(context).copy,
           onTapActionCallback: () {
             Clipboard.setData(ClipboardData(text: suggestionText));
-            appToast.showToastSuccessMessage(
+            appToast?.showToastSuccessMessage(
               context,
               ScribeLocalizations.of(context).copiedToClipboard,
             );

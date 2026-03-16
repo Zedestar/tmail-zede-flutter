@@ -258,8 +258,8 @@ class StringConvert {
   }
 
   static String convertTextContentToHtmlContent(String textContent) {
-    final htmlContent = textContent.replaceAll('\n', '<br>');
-
+    final escapedText = escapeTextContent(textContent);
+    final htmlContent = escapedText.replaceAll('\n', '<br>');
     return '<div>$htmlContent</div>';
   }
 }

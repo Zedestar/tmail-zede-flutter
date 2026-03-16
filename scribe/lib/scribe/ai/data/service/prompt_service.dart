@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -59,8 +59,9 @@ class PromptService {
   }
 
   Future<PromptData> _fetchPromptsFromUrl(String url) async {
-    log('PromptService::_fetchPromptsFromUrl: Fetching from $url');
-    
+    final sanitizedUrl =
+        Uri.tryParse(url)?.replace(queryParameters: {}).toString() ?? url;
+    log('PromptService::_fetchPromptsFromUrl: Fetching from $sanitizedUrl');
     try {
       final response = await _dio.get(url);
       final data = response.data;
@@ -87,11 +88,11 @@ class PromptService {
 
   Future<Prompt> getPromptByName(String name) async {
     final promptData = await loadPrompts();
-    try {
-      return promptData.prompts.firstWhere((prompt) => prompt.name == name);
-    } catch (_) {
+    final prompt = promptData.prompts.where((p) => p.name == name).firstOrNull;
+    if (prompt == null) {
       throw Exception('Prompt not found: $name');
     }
+    return prompt;
   }
 
   Future<List<AIMessage>> buildPromptByName(String name, String inputText, {String? task}) async {

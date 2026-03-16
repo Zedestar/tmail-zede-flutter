@@ -23,7 +23,10 @@ class RichTextMobileTabletController extends GetxController {
     try {
       await htmlEditorApi?.webViewController.evaluateJavascript(source: '''
       (() => {
-        document.getElementById('editor').focus();
+        const editor = document.getElementById('editor');
+        if (editor && typeof editor.focus === 'function') {
+          editor.focus();
+        }
       })();''');
     } catch (e) {
       logWarning('RichTextMobileTabletController::focus:Exception: $e');

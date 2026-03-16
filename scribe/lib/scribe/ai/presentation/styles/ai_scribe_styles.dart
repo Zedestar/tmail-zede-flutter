@@ -120,13 +120,7 @@ abstract final class AIScribeTextStyles {
     color: Colors.black.withValues(alpha: 0.85),
   );
 
-  static final TextStyle contentCard =
-      ThemeUtils.textStyleInter400.copyWith(
-    fontSize: 14,
-    height: 22 / 14,
-    letterSpacing: 0.4,
-    color: Colors.black.withValues(alpha: 0.85),
-  );
+  static final TextStyle contentCard = suggestionContent;
 
   static final TextStyle mainActionButton =
       ThemeUtils.textStyleInter500().copyWith(
@@ -187,7 +181,7 @@ abstract final class AIScribeSizes {
   static const double scribeIcon = 12;
   static const double scribeMobileIcon = 16;
   static const double aiAssistantIcon = 24;
-  static const double bottomsheetIcon = 20;
+  static const double bottomSheetIcon = 20;
 
   // Button sizes
   static const double minButtonWidth = 72;

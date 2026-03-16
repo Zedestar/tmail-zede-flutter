@@ -20,10 +20,10 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
       if (baseUrl != null && baseUrl.isNotEmpty) {
         consumeState(interactor.execute(baseUrl));
       } else {
-        logError('SetupScribePromptUrlExtension::loadLinagoraEcosystem: jmapUrl is null or empty');
+        logWarning('SetupScribePromptUrlExtension::loadLinagoraEcosystem: jmapUrl is null or empty');
       }
     } else {
-      logError('SetupScribePromptUrlExtension::loadLinagoraEcosystem: GetLinagoraEcosystemInteractor not found');
+      logWarning('SetupScribePromptUrlExtension::loadLinagoraEcosystem: GetLinagoraEcosystemInteractor not found');
     }
   }
 
@@ -33,7 +33,8 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
-    logError('SetupScribePromptUrlExtension::handleGetLinagoraEcosystemFailure: GetScribePromptUrl failed - ${failure.exception}');
+    logWarning('SetupScribePromptUrlExtension::handleGetLinagoraEcosystemFailure: GetScribePromptUrl failed - ${failure.exception}');
+    cachedLinagoraEcosystem = null;
     _applyScribePromptUrl(null);
   }
 

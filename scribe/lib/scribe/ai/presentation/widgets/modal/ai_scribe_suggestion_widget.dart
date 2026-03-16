@@ -74,9 +74,12 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
       AIScribeSizes.suggestionModalMaxWidth,
     );
 
-    final modalMaxHeight = min(
-      availableHeight * AIScribeSizes.mobileFactor,
-      AIScribeSizes.suggestionModalMaxHeight,
+    final modalMaxHeight = max(
+      AIScribeSizes.suggestionModalMinHeight,
+      min(
+        availableHeight * AIScribeSizes.mobileFactor,
+        AIScribeSizes.suggestionModalMaxHeight,
+      ),
     );
 
     final dialogContent = _buildDialogContent(context);
@@ -148,9 +151,12 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
       top = anchorPos.dy;
       bottom = null;
 
-      height = min(
-        layout.availableHeight,
-        screenSize.height - anchorPos.dy - anchorSize.height - _defaultPadding,
+      height = max(
+        AIScribeSizes.suggestionModalMinHeight,
+        min(
+          layout.availableHeight,
+          screenSize.height - anchorPos.dy - anchorSize.height - _defaultPadding,
+        ),
       );
 
       width = min(
@@ -163,7 +169,10 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
       // Layout bottom doesn't account for keyboard in calculation usually, so we add it back
       bottom = layout.bottom + keyboardHeightWithSpacing;
 
-      height = layout.availableHeight;
+      height = max(
+        AIScribeSizes.suggestionModalMinHeight,
+        layout.availableHeight,
+      );
       width = modalWidth;
     }
 

@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 
 class AiScribeMobileUtils {
   static bool isScribeInMobileMode(BuildContext? context) {
-    return context != null && (Get.find<ResponsiveUtils>().isMobile(context) || Get.find<ResponsiveUtils>().isLandscapeMobile(context));
+    if (context == null) return false;
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+    return responsiveUtils.isMobile(context) ||
+        responsiveUtils.isLandscapeMobile(context);
   }
 }

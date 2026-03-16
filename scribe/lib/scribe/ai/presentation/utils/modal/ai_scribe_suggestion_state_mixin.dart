@@ -22,14 +22,20 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   ImagePaths get imagePaths;
   OnSelectAiScribeSuggestionAction get onSelectAction;
 
+  late AIAction _currentAiAction;
+  String? _currentContent;
+  int _requestId = 0;
+
   @override
   void initState() {
     super.initState();
+    _currentAiAction = aiAction;
+    _currentContent = content;
 
     if (!Get.isRegistered<GenerateAITextInteractor>()) {
       _suggestionState.value = dartz.Left(
         GenerateAITextFailure(
-          GenerateAITextInteractorIsNotRegisteredException(),
+          const GenerateAITextInteractorIsNotRegisteredException(),
         ),
       );
       return;
@@ -40,26 +46,27 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> loadSuggestion([AIAction? newAiAction, String? newContent]) async {
-    final aiActionToSend = newAiAction ?? aiAction;
-    final contentToSend = newContent ?? content;
+    _currentAiAction = newAiAction ?? _currentAiAction;
+    _currentContent = newContent ?? _currentContent;
+    final requestId = ++_requestId;
 
     _suggestionState.value = dartz.Right(GenerateAITextLoading());
 
     if (_interactor == null) {
       _suggestionState.value = dartz.Left(
         GenerateAITextFailure(
-          GenerateAITextInteractorIsNotRegisteredException(),
+          const GenerateAITextInteractorIsNotRegisteredException(),
         ),
       );
       return;
     }
 
     final result = await _interactor!.execute(
-      aiActionToSend,
-      contentToSend,
+      _currentAiAction,
+      _currentContent,
     );
 
-    if (!mounted) return;
+    if (!mounted || requestId != _requestId) return;
 
     result.fold(
       (failure) => _suggestionState.value = dartz.Left(failure),
@@ -77,7 +84,7 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
           (failure) => buildErrorState(),
           (value) {
             if (value is GenerateAITextSuccess) {
-              final hasContent = content?.trim().isNotEmpty == true;
+              final hasContent = _currentContent?.trim().isNotEmpty == true;
 
               return buildSuccessState(
                 value.response.result,

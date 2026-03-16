@@ -5,14 +5,14 @@ import 'package:scribe/scribe.dart';
 class AiScribeMobileActionsItem extends StatelessWidget {
   final AiScribeContextMenuAction menuAction;
   final ImagePaths imagePaths;
-  final ValueChanged<AiScribeCategoryContextMenuAction>? onCategorySelected;
+  final ValueChanged<AiScribeCategoryContextMenuAction> onCategorySelected;
   final ValueChanged<AiScribeContextMenuAction> onActionSelected;
 
   const AiScribeMobileActionsItem({
     super.key,
     required this.menuAction,
     required this.imagePaths,
-    this.onCategorySelected,
+    required this.onCategorySelected,
     required this.onActionSelected,
   });
 
@@ -23,11 +23,11 @@ class AiScribeMobileActionsItem extends StatelessWidget {
       return AiScribeMenuItem(
         menuAction: menuAction,
         imagePaths: imagePaths,
-        onSelectAction: (menuAction) {
-          if (menuAction is AiScribeCategoryContextMenuAction) {
-            onCategorySelected?.call(menuAction);
+        onSelectAction: (selectedAction) {
+          if (selectedAction is AiScribeCategoryContextMenuAction) {
+            onCategorySelected.call(selectedAction);
           } else {
-            onActionSelected.call(menuAction);
+            onActionSelected.call(selectedAction);
           }
         }
       );

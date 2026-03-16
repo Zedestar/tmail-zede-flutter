@@ -1,6 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
@@ -21,7 +20,10 @@ class InlineAiAssistButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = PlatformInfo.isWeb ? AIScribeSizes.scribeIcon : AIScribeSizes.scribeMobileIcon;
+    final isScribeMobile = AiScribeMobileUtils.isScribeInMobileMode(context);
+    final iconSize = isScribeMobile
+        ? AIScribeSizes.scribeMobileIcon
+        : AIScribeSizes.scribeIcon;
 
     return TMailButtonWidget.fromIcon(
       icon: imagePaths.icSparkle,
@@ -31,11 +33,14 @@ class InlineAiAssistButton extends StatelessWidget {
       iconColor: AIScribeColors.scribeIcon,
       borderRadius: AIScribeSizes.scribeButtonRadius,
       boxShadow: AIScribeShadows.sparkleIcon,
-      onTapActionCallback: () => _onTapActionCallback(context),
+      onTapActionCallback: () => _onTapActionCallback(context, isScribeMobile),
     );
   }
 
-  Future<void> _onTapActionCallback(BuildContext context) async {
+  Future<void> _onTapActionCallback(
+    BuildContext context,
+    bool isScribeMobile,
+  ) async {
     final renderBox = context.findRenderObject();
 
     Offset? position;
@@ -45,8 +50,6 @@ class InlineAiAssistButton extends StatelessWidget {
       position = renderBox.localToGlobal(Offset.zero);
       size = renderBox.size;
     }
-
-    final isScribeMobile = AiScribeMobileUtils.isScribeInMobileMode(context);
 
     await onTapFallback?.call();
 

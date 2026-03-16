@@ -12,7 +12,7 @@ class GetLinagoraEcosystemSuccess extends Success {
 }
 
 class GetLinagoraEcosystemFailure extends Failure {
-  final dynamic exception;
+  final Object exception;
 
   GetLinagoraEcosystemFailure(this.exception);
 

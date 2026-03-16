@@ -3470,6 +3470,7 @@ class MailboxDashBoardController extends ReloadableController
     twakeAppManager.setHasComposer(false);
     paywallController?.onClose();
     paywallController = null;
+    cachedLinagoraEcosystem = null;
     _disposeWorkerObxVariables();
     super.onClose();
   }

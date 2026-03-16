@@ -1,10 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
-import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 
 class _ThrowingAdapter implements HttpClientAdapter {
   @override
@@ -59,51 +58,21 @@ void main() {
   });
 
   group('PromptService getPromptByName', () {
-    test('getPromptByName should return correct prompt from data', () async {
-      // Arrange
-      final promptData = PromptData(
-        prompts: [
-          Prompt(
-            name: 'test-prompt',
-            messages: [
-              const AIMessage(role: AIRole.system, content: 'System message'),
-              const AIMessage(role: AIRole.user, content: 'User message with {{input}}')
-            ]
-          )
-        ]
-      );
+    test('getPromptByName should return correct prompt from assets', () async {
+      final service = PromptService(_throwingDio());
 
-      // Act
-      final prompt = promptData.prompts.firstWhere(
-        (prompt) => prompt.name == 'test-prompt',
-        orElse: () => throw Exception('Prompt not found: test-prompt'),
-      );
+      final prompt = await service.getPromptByName('change-tone-casual');
 
-      // Assert
-      expect(prompt.name, 'test-prompt');
-      expect(prompt.messages.length, 2);
+      expect(prompt.name, 'change-tone-casual');
+      expect(prompt.messages.length, greaterThan(0));
     });
 
-    test('getPromptByName should throw exception for non-existent prompt', () async {
-      // Arrange
-      final promptData = PromptData(
-        prompts: [
-          Prompt(
-            name: 'test-prompt',
-            messages: [
-              const AIMessage(role: AIRole.system, content: 'System message'),
-              const AIMessage(role: AIRole.user, content: 'User message')
-            ]
-          )
-        ]
-      );
+    test('getPromptByName should throw exception for non-existent prompt',
+        () async {
+      final service = PromptService(_throwingDio());
 
-      // Act & Assert
-      expect(
-        () => promptData.prompts.firstWhere(
-          (prompt) => prompt.name == 'non-existent-prompt',
-          orElse: () => throw Exception('Prompt not found: non-existent-prompt'),
-        ),
+      await expectLater(
+        service.getPromptByName('non-existent-prompt'),
         throwsException,
       );
     });

@@ -83,11 +83,17 @@ class AiScribeModalWidget extends StatelessWidget {
       // in tablet mode where we can encounter keyboard and modal we have issues 
       // with calculating the modal height and the search bar is frequently behind the keyboard
       // that's why we take more space here
-      final searchBarHeight = keyboardHeight > 0 ? AIScribeSizes.searchBarMaxHeight : AIScribeSizes.searchBarMinHeight;
+      final searchBarHeight = showCustomPromptBar
+          ? (keyboardHeight > 0
+              ? AIScribeSizes.searchBarMaxHeight
+              : AIScribeSizes.searchBarMinHeight)
+          : 0.0;
+      final contentSpacing =
+          hasContent && showCustomPromptBar ? AIScribeSizes.fieldSpacing : 0.0;
 
       final maxHeightModal = hasContent
           ? searchBarHeight +
-              AIScribeSizes.fieldSpacing +
+              contentSpacing +
               min(menuActions.length * AIScribeSizes.menuItemHeight,
                   AIScribeSizes.submenuMaxHeight)
           : searchBarHeight;

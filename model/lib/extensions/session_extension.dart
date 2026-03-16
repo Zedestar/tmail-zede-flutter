@@ -177,7 +177,7 @@ extension SessionExtension on Session {
     try {
       return personalAccount.accountId;
     } catch (e) {
-      logError('SessionExtension::safeAccountId:Exception: $e');
+      logWarning('SessionExtension::safeAccountId:Exception: $e');
       return null;
     }
   }

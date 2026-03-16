@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 
 void main() {
   group('PromptData', () {
@@ -162,6 +162,20 @@ void main() {
       // Assert
       expect(result.length, 2);
       expect(result.last.content, 'User message without placeholders');
+    });
+
+    test('fromJson should throw FormatException when name is missing', () {
+      final jsonData = {"messages": []};
+
+      expect(() => Prompt.fromJson(jsonData), throwsA(isA<FormatException>()));
+    });
+
+    test('fromJson should handle missing prompts key', () {
+      final jsonData = <String, dynamic>{};
+
+      final promptData = PromptData.fromJson(jsonData);
+
+      expect(promptData.prompts, isEmpty);
     });
   });
 }

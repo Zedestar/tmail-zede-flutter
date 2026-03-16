@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 import 'package:scribe/scribe/ai/data/network/ai_api.dart';
 import 'package:scribe/scribe/ai/domain/model/ai_response.dart';
 

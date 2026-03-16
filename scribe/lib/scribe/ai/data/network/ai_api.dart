@@ -1,7 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_response.dart';
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 
 class AIApi {
   final DioClient _dioClient;

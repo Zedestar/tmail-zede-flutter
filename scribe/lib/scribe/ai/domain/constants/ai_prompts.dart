@@ -1,11 +1,19 @@
-import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:get/get.dart';
 
 class AIPrompts {
-  static final PromptService _promptService = Get.find<PromptService>();
+  static PromptService? _promptServiceInstance;
+
+  static PromptService get _promptService {
+    if (!Get.isRegistered<PromptService>()) {
+      throw StateError(
+          'PromptService not registered. Ensure NetworkBindings.dependencies() has been called.');
+    }
+    return _promptServiceInstance ??= Get.find<PromptService>();
+  }
 
   static Future<List<AIMessage>> buildPrompt(AIAction action, String? text) async {
     return switch (action) {
@@ -23,7 +31,17 @@ class AIPrompts {
     return await _promptService.buildPromptByName(menuAction.promptId, text);
   }
 
-  static Future<List<AIMessage>> buildCustomPrompt(String customPrompt, String? text) async {
-    return await _promptService.buildPromptByName(CustomPromptAction.promptId, text ?? '', task: customPrompt);
+  static Future<List<AIMessage>> buildCustomPrompt(
+    String customPrompt,
+    String? text,
+  ) async {
+    if (customPrompt.trim().isEmpty) {
+      throw ArgumentError('Custom prompt cannot be empty');
+    }
+    return await _promptService.buildPromptByName(
+      CustomPromptAction.promptId,
+      text ?? '',
+      task: customPrompt,
+    );
   }
 }

@@ -46,19 +46,39 @@ class AiScribeSuggestionSuccessActions extends StatelessWidget {
 
   Widget _buildReplaceButton(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
+    return _buildActionButton(
+      context: context,
+      label: AiScribeSuggestionActions.replace.getLabel(localizations),
+      textColor: AppColor.primaryMain,
+      action: AiScribeSuggestionActions.replace,
+    );
+  }
+
+  Widget _buildActionButton({
+    required BuildContext context,
+    required String label,
+    Color? backgroundColor,
+    required Color textColor,
+    required AiScribeSuggestionActions action,
+  }) {
+    final isMobileScribe = AiScribeMobileUtils.isScribeInMobileMode(context);
     return Flexible(
       child: Container(
-        constraints: const BoxConstraints(minWidth: AIScribeSizes.minButtonWidth),
-        height: AIScribeSizes.buttonHeight,
+        constraints: BoxConstraints(
+          minWidth: isMobileScribe
+              ? AIScribeSizes.minButtonMobileWidth
+              : AIScribeSizes.minButtonWidth,
+        ),
+        height: isMobileScribe
+            ? AIScribeSizes.buttonMobileHeight
+            : AIScribeSizes.buttonHeight,
         child: ConfirmDialogButton(
-          label: AiScribeSuggestionActions.replace.getLabel(localizations),
-          textColor: AppColor.primaryMain,
+          label: label,
+          backgroundColor: backgroundColor,
+          textColor: textColor,
           onTapAction: () {
             Navigator.of(context).pop();
-            onSelectAction(
-              AiScribeSuggestionActions.replace,
-              suggestionText,
-            );
+            onSelectAction(action, suggestionText);
           },
         ),
       ),
@@ -67,24 +87,12 @@ class AiScribeSuggestionSuccessActions extends StatelessWidget {
 
   Widget _buildInsertButton(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
-    final isMobileScribe = AiScribeMobileUtils.isScribeInMobileMode(context);
-    return Flexible(
-      child: Container(
-        constraints: BoxConstraints(minWidth: isMobileScribe ? AIScribeSizes.minButtonMobileWidth : AIScribeSizes.minButtonWidth),
-        height: isMobileScribe ? AIScribeSizes.buttonMobileHeight : AIScribeSizes.buttonHeight,
-        child: ConfirmDialogButton(
-          label: AiScribeSuggestionActions.insert.getLabel(localizations),
-          backgroundColor: AppColor.primaryMain,
-          textColor: Colors.white,
-          onTapAction: () {
-            Navigator.of(context).pop();
-            onSelectAction(
-              AiScribeSuggestionActions.insert,
-              suggestionText,
-            );
-          },
-        ),
-      ),
+    return _buildActionButton(
+      context: context,
+      label: AiScribeSuggestionActions.insert.getLabel(localizations),
+      backgroundColor: AppColor.primaryMain,
+      textColor: Colors.white,
+      action: AiScribeSuggestionActions.insert,
     );
   }
 }
