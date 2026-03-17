@@ -10,6 +10,14 @@ Proposed
 
 After enabling `collapseThreads = true` (ADR-0071), each item in the `EmailList` represents a **ThreadId** instead of an individual `EmailId`.
 
+### Preconditions (from ADR-0071)
+
+Thread-aware flow is enabled only when:
+1. Session capability indicates `collapseThreads` is supported.
+2. User Settings toggle for thread mode is enabled.
+
+If either condition is false, keep existing EmailId-based flow.
+
 However, the current system:
 
 * All actions (`markAsRead`, `move`, `star`, etc.) operate on:
@@ -45,7 +53,7 @@ When users perform actions on:
 
 the system must resolve:
 
-```
+```text
 ThreadId → List<EmailId>
 ```
 
@@ -65,7 +73,7 @@ Key challenges:
 
 ## Architecture Overview
 
-```
+```text
 Thread Interactor
     ↓
 ThreadExpansionService
@@ -262,6 +270,7 @@ class MoveThreadInteractor {
     required MailboxId sentMailboxId,
     required String ownEmailAddress,
     List<ThreadId> threadIds = const [],
+    List<EmailId> emailIds = const [],
   }) async {
     final expansion = await expansionService.expandThreads(
       threadIds: threadIds,
@@ -271,7 +280,12 @@ class MoveThreadInteractor {
       ownEmailAddress: ownEmailAddress,
     );
 
-    if (expansion.emailIds.isEmpty) {
+     final allEmailIds = {
+       ...emailIds,
+      ...expansion.emailIds,
+     }.toList();
+    
+     if (allEmailIds.isEmpty) {
       return ThreadActionResult(
         success: [],
         actionErrors: {},
@@ -282,7 +296,7 @@ class MoveThreadInteractor {
     final result = await moveInteractor.execute(
       session: session,
       accountId: accountId,
-      emailIds: expansion.emailIds,
+      emailIds: allEmailIds,
       destinationMailboxId: destinationMailboxId,
     );
 
@@ -360,7 +374,7 @@ expansionService.clearCache();
 
 ## Summary
 
-```
+```text
 Thread Action Flow:
 
 ThreadIds
