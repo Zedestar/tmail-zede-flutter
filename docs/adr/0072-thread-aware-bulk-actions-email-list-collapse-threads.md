@@ -364,10 +364,10 @@ expansionService.clearCache();
 
 Hook `expansionService.clearCache()` in:
 
-- `MailboxRepository` after successful sync completion
-- Email interactor wrappers after successful state mutations (read/unread, star, move, delete)
-- Settings controller when `collapseThreads` toggle changes
-- Thread detail update callbacks when thread membership changes
+- `ThreadController.refreshAllEmail()` after mailbox sync completes (see lib/features/thread/presentation/thread_controller.dart)
+- `MarkAsThreadReadInteractor`, `MoveThreadInteractor`, etc. after calling `clearCache()` post-action
+- Settings controller's `onCollapseThreadsToggled()` callback (or equivalent setter)
+- `ThreadDetailRepository` observers when `getThreadById` detects membership changes
 
 ## Consequences
 
