@@ -184,6 +184,9 @@ class ThreadExpansionService {
 ### Result Model
 
 ```dart
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+
 class ThreadActionResult {
   final List<EmailId> success;
   final Map<Id, SetError> actionErrors;
@@ -204,16 +207,19 @@ class ThreadActionResult {
 ```dart
 class MarkAsThreadReadInteractor {
   final ThreadExpansionService expansionService;
-  final MarkAsMultipleEmailReadInteractor emailInteractor;
+  final EmailRepository emailRepository;
 
-  MarkAsThreadReadInteractor(this.expansionService,
-      this.emailInteractor,);
+  MarkAsThreadReadInteractor(
+    this.expansionService,
+    this.emailRepository,
+  );
 
   Future<ThreadActionResult> execute({
     required Session session,
     required AccountId accountId,
     required MailboxId sentMailboxId,
     required String ownEmailAddress,
+    required ReadActions readAction,
     List<ThreadId> threadIds = const [],
     List<EmailId> emailIds = const [],
   }) async {
@@ -238,10 +244,11 @@ class MarkAsThreadReadInteractor {
       );
     }
 
-    final result = await emailInteractor.execute(
-      session: session,
-      accountId: accountId,
-      emailIds: allEmailIds,
+    final result = await emailRepository.markAsRead(
+      session,
+      accountId,
+      emailIds,
+      readAction,
     );
 
     return ThreadActionResult(
@@ -258,17 +265,19 @@ class MarkAsThreadReadInteractor {
 ```dart
 class MoveThreadInteractor {
   final ThreadExpansionService expansionService;
-  final MoveMultipleEmailInteractor moveInteractor;
+  final EmailRepository emailRepository;
 
-  MoveThreadInteractor(this.expansionService,
-      this.moveInteractor,);
+  MoveThreadInteractor(
+    this.expansionService,
+    this.emailRepository,
+  );
 
   Future<ThreadActionResult> execute({
     required Session session,
     required AccountId accountId,
-    required MailboxId destinationMailboxId,
     required MailboxId sentMailboxId,
     required String ownEmailAddress,
+    required MoveToMailboxRequest moveRequest,
     List<ThreadId> threadIds = const [],
     List<EmailId> emailIds = const [],
   }) async {
@@ -293,12 +302,7 @@ class MoveThreadInteractor {
       );
     }
 
-    final result = await moveInteractor.execute(
-      session: session,
-      accountId: accountId,
-      emailIds: allEmailIds,
-      destinationMailboxId: destinationMailboxId,
-    );
+    final result = await emailRepository.moveToMailbox(session, accountId, moveRequest);
 
     return ThreadActionResult(
       success: result.emailIdsSuccess,
@@ -356,6 +360,15 @@ Cache must be cleared when:
 expansionService.clearCache();
 ```
 
+### Implementation Points
+
+Hook `expansionService.clearCache()` in:
+
+- `MailboxRepository` after successful sync completion
+- Email interactor wrappers after successful state mutations (read/unread, star, move, delete)
+- Settings controller when `collapseThreads` toggle changes
+- Thread detail update callbacks when thread membership changes
+
 ## Consequences
 
 ### Positive
@@ -371,6 +384,8 @@ expansionService.clearCache();
 * Increased number of interactors
 * Requires careful cache invalidation
 * Still involves multiple API calls (mitigated via cache + parallelism)
+* Stream-based integration adds complexity (async iteration, result collection, state management)
+* Complex request object construction (MoveToMailboxRequest, emailIdsByMailboxId) requires additional context gathering
 
 ## Summary
 
