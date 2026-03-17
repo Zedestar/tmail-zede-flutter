@@ -89,6 +89,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
           propertiesCreated: propertiesCreated,
         );
       }
+      logTrace(
+        'ThreadRepositoryImpl::getAllEmail(): '
+        'CachedEmail = ${localEmailResponse.emailList?.length}, '
+        'CachedNotFoundEmailIds = ${localEmailResponse.notFoundEmailIds?.length}, '
+        'CachedState = ${localEmailResponse.state?.value}, '
+        'NetworkEmail = ${networkEmailResponse.emailList?.length}, '
+        'NetworkNotFoundEmailIds = ${networkEmailResponse.notFoundEmailIds?.length}, '
+        'NetworkState = ${networkEmailResponse.state?.value}, '
+        'Limit = ${limit?.value}, '
+        'MailboxId = ${emailFilter?.mailboxId?.asString}',
+      );
       yield networkEmailResponse;
     } else {
       yield localEmailResponse;
@@ -136,6 +147,13 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
+    logTrace(
+      'ThreadRepositoryImpl::getAllEmail(): '
+      'DisplayedCachedEmail = ${newEmailResponse.emailList?.length}, '
+      'DisplayedNotFoundEmailIds = ${newEmailResponse.notFoundEmailIds?.length}, '
+      'DisplayedState = ${newEmailResponse.state?.value}',
+    );
+
     yield newEmailResponse;
   }
 
@@ -182,14 +200,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
     );
 
     final serverCount = serverResponse.emailList?.length ?? 0;
+    final notFoundEmailIds = serverResponse.notFoundEmailIds ?? [];
+    final stateResponse = cachedState ?? serverResponse.state;
 
-    log(
+    logTrace(
       'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
-      'Server email count = $serverCount',
+      'ServerEmailCount = $serverCount, '
+      'ServerNotFoundEmailIds = ${notFoundEmailIds.length}, '
+      'StateResponse = ${stateResponse?.value}',
     );
 
-    if (serverCount > 0 ||
-        (serverResponse.notFoundEmailIds?.isNotEmpty ?? false)) {
+    if (serverCount > 0 || notFoundEmailIds.isNotEmpty) {
       await _updateEmailCache(
         accountId,
         session.username,
@@ -201,7 +222,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     // Combine server list + keep existing state
     yield EmailsResponse(
       emailList: serverResponse.emailList,
-      state: cachedState ?? serverResponse.state,
+      state: stateResponse,
     );
   }
 
