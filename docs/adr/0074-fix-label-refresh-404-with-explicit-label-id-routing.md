@@ -323,10 +323,10 @@ MailboxId? get browserRouteMailboxId =>
 ### 5. Update routing resolution
 
 ```dart
-if (mailboxId != null) {
-  resolveMailbox(mailboxId);
-} else if (labelId != null) {
+if (labelId != null) {
   resolveLabel(labelId);
+} else if (mailboxId != null) {
+  resolveMailbox(mailboxId);
 }
 ```
 
