@@ -78,13 +78,13 @@ Key challenges:
 ```text
 User Action (UI)
     ↓
-Thread-aware Interactor
+Thread-aware Interactor (Stream<UIState>)
     ↓
 ThreadExpansionService
     ↓
-List<EmailId>
+List<EmailId> (deduplicated & pagination-safe)
     ↓
-Existing Email Interactor
+Existing Email Interactor (Stream)
     ↓
 UI State Update (Optimistic + Server Sync)
 ```
@@ -100,6 +100,13 @@ UI State Update (Optimistic + Server Sync)
     * caching
     * parallel execution
     * error isolation
+    * pagination awareness
+
+### Pagination Awareness
+
+We've already handled pagination for the `Email/set` and `Email/get` methods 
+in the mixins `BatchSetEmailProcessingMixin` and `BatchGetEmailProcessingMixin`, 
+so we just need to call and use them.
 
 ### Data Model
 
