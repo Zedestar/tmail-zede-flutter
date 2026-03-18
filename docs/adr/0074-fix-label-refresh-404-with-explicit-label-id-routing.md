@@ -159,11 +159,11 @@ App -> Router: navigate(404)
 
 ```text
 User -> Browser: Open Label (L1)
-Browser -> App: /dashboard?labelId=L1
+Browser -> App: /dashboard?type=normal&labelId=L1
 
 User -> Browser: Refresh
 
-Browser -> App: /dashboard?labelId=L1
+Browser -> App: /dashboard?type=normal&labelId=L1
 
 App -> Router: parse(labelId=L1)
 Router -> LabelController: resolve(labelId)
@@ -223,10 +223,10 @@ To prevent breaking existing URLs:
 If `labelId` is absent but `context` exists:
 
 ```dart
-if (mailboxId != null) {
-  resolveMailbox(mailboxId);
-} else if (labelId != null) {
+if (labelId != null) {
   resolveLabel(labelId);
+} else if (mailboxId != null) {
+  resolveMailbox(mailboxId);
 } else if (context != null) {
   resolveMailbox(context) ?? resolveLabel(context);
 }
