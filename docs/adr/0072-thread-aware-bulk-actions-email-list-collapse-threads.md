@@ -35,11 +35,13 @@ List<EmailId>
 
 ```dart
 abstract class ThreadDetailRepository {
-  Future<List<EmailInThreadDetailInfo>> getThreadById(ThreadId threadId,
-      Session session,
-      AccountId accountId,
-      MailboxId sentMailboxId,
-      String ownEmailAddress,);
+  Future<List<EmailInThreadDetailInfo>> getThreadById(
+    ThreadId threadId,
+    Session session,
+    AccountId accountId,
+    MailboxId sentMailboxId,
+    String ownEmailAddress,
+  );
 }
 ```
 
@@ -74,13 +76,17 @@ Key challenges:
 ## Architecture Overview
 
 ```text
-Thread Interactor
+User Action (UI)
+    ↓
+Thread-aware Interactor
     ↓
 ThreadExpansionService
     ↓
 List<EmailId>
     ↓
 Existing Email Interactor
+    ↓
+UI State Update (Optimistic + Server Sync)
 ```
 
 ## 1. Thread Expansion Service
@@ -214,7 +220,7 @@ class MarkAsThreadReadInteractor {
     this.emailRepository,
   );
 
-  Future<ThreadActionResult> execute({
+  Stream<Either<Failure, Success>> execute({
     required Session session,
     required AccountId accountId,
     required MailboxId sentMailboxId,
@@ -222,7 +228,9 @@ class MarkAsThreadReadInteractor {
     required ReadActions readAction,
     List<ThreadId> threadIds = const [],
     List<EmailId> emailIds = const [],
-  }) async {
+  }) async* {
+    yield Right(LoadingMarkAsThreadRead());
+    
     final expansion = await expansionService.expandThreads(
       threadIds: threadIds,
       session: session,
@@ -237,11 +245,12 @@ class MarkAsThreadReadInteractor {
     }.toList();
 
     if (allEmailIds.isEmpty) {
-      return ThreadActionResult(
+      yield Left(MarkAsThreadReadFailure(ThreadActionResult(
         success: [],
         actionErrors: {},
         expansionErrors: expansion.errors,
-      );
+      )));
+      return;
     }
 
     final result = await emailRepository.markAsRead(
@@ -251,11 +260,11 @@ class MarkAsThreadReadInteractor {
       readAction,
     );
 
-    return ThreadActionResult(
+    yield Right(MarkAsThreadReadSuccess(ThreadActionResult(
       success: result.emailIdsSuccess,
       actionErrors: result.mapErrors,
       expansionErrors: expansion.errors,
-    );
+    )));
   }
 }
 ```
@@ -272,7 +281,7 @@ class MoveThreadInteractor {
     this.emailRepository,
   );
 
-  Future<ThreadActionResult> execute({
+  Stream<Either<Failure, Success>> execute({
     required Session session,
     required AccountId accountId,
     required MailboxId sentMailboxId,
@@ -280,7 +289,9 @@ class MoveThreadInteractor {
     required MoveToMailboxRequest moveRequest,
     List<ThreadId> threadIds = const [],
     List<EmailId> emailIds = const [],
-  }) async {
+  }) async* {
+    yield Right(LoadingMoveThread());
+    
     final expansion = await expansionService.expandThreads(
       threadIds: threadIds,
       session: session,
@@ -295,25 +306,71 @@ class MoveThreadInteractor {
      }.toList();
     
      if (allEmailIds.isEmpty) {
-      return ThreadActionResult(
-        success: [],
-        actionErrors: {},
-        expansionErrors: expansion.errors,
-      );
+       yield Left(MarkAsThreadReadFailure(ThreadActionResult(
+         success: [],
+         actionErrors: {},
+         expansionErrors: expansion.errors,
+       )));
+       return;
     }
 
     final result = await emailRepository.moveToMailbox(session, accountId, moveRequest);
 
-    return ThreadActionResult(
+    yield Right(MarkAsThreadReadSuccess(ThreadActionResult(
       success: result.emailIdsSuccess,
       actionErrors: result.mapErrors,
       expansionErrors: expansion.errors,
-    );
+    )));
   }
 }
 ```
 
-## 4. Key Design Properties
+## 3. UI Responsiveness
+
+### Problem
+
+> Delay from user click → UI updated
+
+### Decision: Optimistic UI Update
+
+Immediately update UI before server response.
+
+### Flow
+
+```text
+User click "Mark as read"
+    ↓
+UI updates instantly (optimistic)
+    ↓
+Interactor executes
+    ↓
+Server response:
+    - success → keep state
+    - partial → reconcile
+    - failure → rollback
+```
+
+### UI State Strategy
+
+| Case    | Behavior           |
+| ------- | ------------------ |
+| Loading | Already updated UI |
+| Success | Confirm            |
+| Partial | Patch missing      |
+| Failure | Rollback           |
+
+### Per Email UI Update
+
+Even when acting on thread:
+
+👉 UI updates must happen at **Email level**, not Thread only.
+
+Reason:
+
+* Thread UI derived from Email states
+* Avoid inconsistent UI
+
+## 5. Key Design Properties
 
 ### Error Isolation
 
@@ -347,13 +404,14 @@ await Future.wait(...);
 
 * Minimizes latency for multi-thread operations
 
-## 5. Cache Invalidation
+## 6. Cache Invalidation
 
 Cache must be cleared when:
 
 * Mailbox sync occurs
 * Email state changes (read, star, move, delete)
 * Thread content changes
+* Websocket event (Refresh change invoke )
 * `collapseThreads` is toggled
 
 ```dart
@@ -364,7 +422,7 @@ expansionService.clearCache();
 
 Hook `expansionService.clearCache()` in:
 
-- `ThreadController.refreshAllEmail()` after mailbox sync completes (see lib/features/thread/presentation/thread_controller.dart)
+- `ThreadController.refreshAllEmail()`, `ThreadController.refreshChangeEmail()` after mailbox sync completes (see lib/features/thread/presentation/thread_controller.dart)
 - `MarkAsThreadReadInteractor`, `MoveThreadInteractor`, etc. after calling `clearCache()` post-action
 - Settings controller's `onCollapseThreadsToggled()` callback (or equivalent setter)
 - `ThreadDetailRepository` observers when `getThreadById` detects membership changes
