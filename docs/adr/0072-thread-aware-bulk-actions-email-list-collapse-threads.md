@@ -329,7 +329,16 @@ class MoveThreadInteractor {
 
 ### Problem
 
-> Delay from user click → UI updated
+Delay between:
+
+```text
+User action → Interactor → Server → UI update
+```
+
+causes:
+
+* Perceived lag
+* Poor UX in bulk/thread actions
 
 ### Decision: Optimistic UI Update
 
@@ -369,6 +378,168 @@ Reason:
 
 * Thread UI derived from Email states
 * Avoid inconsistent UI
+
+## Implementation Strategy
+
+Instead of maintaining a separate snapshot system, we **reuse existing domain logic**:
+
+```dart
+updateEmailFlagByEmailIds(...)
+```
+
+### Key Principle
+
+> UI is updated by mutating `PresentationEmail.keywords` immediately
+
+## Optimistic Update Flow
+
+```text
+User click (mark read/star)
+    ↓
+MailboxDashboardController.updateEmailFlagByEmailIds(...)   ← (optimistic)
+    ↓
+UI updates instantly (via RxList.refresh)
+    ↓
+Interactor.execute() (async)
+    ↓
+Server response:
+    - success → do nothing
+    - partial → reconcile (optional)
+    - failure → rollback (via reverse update)
+```
+
+## Controller-Level Implementation
+
+### ✅ Optimistic Update Trigger
+
+```dart
+controller.updateEmailFlagByEmailIds(
+  emailIds,
+  readAction: ReadActions.markAsRead,
+);
+```
+
+OR
+
+```dart
+controller.updateEmailFlagByEmailIds(
+  emailIds,
+  markStarAction: MarkStarAction.markStar,
+);
+```
+
+## 🔁 Rollback Strategy
+
+Instead of snapshot map, rollback is performed by **inverse operation**:
+
+| Action     | Rollback     |
+| ---------- | ------------ |
+| markAsRead | markAsUnread |
+| markStar   | unMarkStar   |
+
+### Example
+
+```dart
+controller.updateEmailFlagByEmailIds(
+  emailIds,
+  readAction: ReadActions.markAsUnread, // rollback
+);
+```
+
+## ⚠️ Partial Success Handling
+
+When:
+
+```text
+Some emailIds succeed, some fail
+```
+
+We perform:
+
+```dart
+final failedIds = allIds - successIds;
+
+controller.updateEmailFlagByEmailIds(
+  failedIds,
+  readAction: ReadActions.markAsUnread,
+);
+```
+
+## 🔄 Keyword-based Update Model
+
+### Core Mechanism
+
+```dart
+presentationEmail.keywords?[keyword] = true;
+presentationEmail.keywords?.remove(keyword);
+```
+
+This ensures:
+
+* Fine-grained update (no full object replace)
+* No unnecessary rebuilds
+* Compatible with JMAP keyword model
+
+## 📡 UI Sync Behavior
+
+### Why this works well
+
+Because:
+
+```dart
+currentEmails.refresh();
+```
+
+ensures:
+
+* Immediate UI re-render
+* Works for both:
+
+  * mailbox list
+  * search result list
+
+## 🔗 Thread Detail Synchronization
+
+When updating single email:
+
+```dart
+dispatchThreadDetailUIAction(UpdatedEmailKeywordsAction(...));
+```
+
+ensures:
+
+* Thread detail UI stays consistent
+* Avoids mismatch between:
+
+  * EmailList
+  * ThreadDetail screen
+
+## ⚠️ Limitations
+
+### 1. No Snapshot → No True Rollback
+
+Trade-off:
+
+* ✅ Simpler implementation
+* ❌ Cannot restore original complex state (only inverse action)
+
+### 2. Concurrent Actions Risk
+
+Example:
+
+```text
+Action A: mark as read
+Action B: mark as unread (before A completes)
+```
+
+👉 May cause inconsistency
+
+### 3. WebSocket Override
+
+If WebSocket pushes state:
+
+* It may override optimistic state
+* This is acceptable (server is source of truth)
 
 ## 5. Key Design Properties
 
