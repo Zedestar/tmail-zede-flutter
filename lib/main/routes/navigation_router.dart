@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -14,6 +15,7 @@ enum DashboardType {
 class NavigationRouter with EquatableMixin {
   final EmailId? emailId;
   final MailboxId? mailboxId;
+  final Id? labelId;
   final DashboardType dashboardType;
   final SearchQuery? searchQuery;
   final String? routeName;
@@ -36,6 +38,7 @@ class NavigationRouter with EquatableMixin {
     this.accountMenuItem = AccountMenuItem.none,
     this.cc,
     this.bcc,
+    this.labelId,
   });
 
   factory NavigationRouter.initial() => NavigationRouter();
@@ -53,5 +56,6 @@ class NavigationRouter with EquatableMixin {
     accountMenuItem,
     cc,
     bcc,
+    labelId,
   ];
 }
