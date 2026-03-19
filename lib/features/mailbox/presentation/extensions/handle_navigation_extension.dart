@@ -1,35 +1,80 @@
+import 'dart:ui';
+
+import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleNavigationExtension on MailboxController {
-  void handleLabelNavigation() {
-    final router = navigationRouter;
-    if (router == null) return;
+  void handleLabelNavigation(NavigationRouter router, Id labelId) {
+    if (!_isLabelCapabilityValid()) {
+      _navigateToUnknown();
+      return;
+    }
 
-    final labelId = router.labelId;
-    if (labelId == null) return;
+    if (!_isLabelsReady()) {
+      _waitForLabelsLoaded(() {
+        _handleLabelNavigationInternal(router, labelId);
+      });
+      return;
+    }
 
+    _handleLabelNavigationInternal(router, labelId);
+  }
+
+  bool _isLabelCapabilityValid() {
+    return mailboxDashBoardController.isLabelCapabilitySupported;
+  }
+
+  bool _isLabelsReady() {
+    return mailboxDashBoardController.labelController.isLabelsLoaded.value;
+  }
+
+  void _waitForLabelsLoaded(VoidCallback onLoaded) {
+    late Worker worker;
+
+    worker = ever(
+      mailboxDashBoardController.labelController.isLabelsLoaded,
+      (isLoaded) {
+        if (isLoaded != true) return;
+        worker.dispose();
+        onLoaded();
+      },
+    );
+  }
+
+  void _handleLabelNavigationInternal(
+    NavigationRouter router,
+    Id labelId,
+  ) {
     final matchedLabel = mailboxDashBoardController.getLabelById(labelId);
 
-    if (matchedLabel != null) {
-      final labelMailbox = PresentationLabelMailbox.initial(matchedLabel);
-
-      if (router.emailId != null) {
-        openEmailInsideMailboxFromLocationBar(
-          labelMailbox,
-          router.emailId!,
-        );
-      } else {
-        openMailboxFromLocationBar(labelMailbox);
-      }
-
-      mailboxDashBoardController.scrollToLabelListView();
-    } else {
-      clearNavigationRouter();
-      popAndPush(AppRoutes.unknownRoutePage);
+    if (matchedLabel == null) {
+      _navigateToUnknown();
+      return;
     }
+
+    final labelMailbox = PresentationLabelMailbox.initial(matchedLabel);
+
+    if (router.emailId != null) {
+      openEmailInsideMailboxFromLocationBar(
+        labelMailbox,
+        router.emailId!,
+      );
+    } else {
+      openMailboxFromLocationBar(labelMailbox);
+    }
+
+    mailboxDashBoardController.scrollToLabelListView();
+  }
+
+  void _navigateToUnknown() {
+    clearNavigationRouter();
+    popAndPush(AppRoutes.unknownRoutePage);
   }
 }

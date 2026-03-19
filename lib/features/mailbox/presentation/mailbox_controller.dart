@@ -791,7 +791,7 @@ class MailboxController extends BaseMailboxController
         break;
       case DashboardType.normal:
         if (_navigationRouter!.labelId != null) {
-          handleLabelNavigation();
+          handleLabelNavigation(_navigationRouter!, _navigationRouter!.labelId!);
         } else if (_navigationRouter!.mailboxId != null) {
           final matchedMailboxNode = findMailboxNodeById(_navigationRouter!.mailboxId!);
           if (matchedMailboxNode != null) {

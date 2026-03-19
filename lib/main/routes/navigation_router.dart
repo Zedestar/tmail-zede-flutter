@@ -39,7 +39,10 @@ class NavigationRouter with EquatableMixin {
     this.cc,
     this.bcc,
     this.labelId,
-  });
+  }) : assert(
+          !(mailboxId != null && labelId != null),
+          'NavigationRouter accepts either mailboxId or labelId, not both.',
+        );
 
   factory NavigationRouter.initial() => NavigationRouter();
 

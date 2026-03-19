@@ -39,6 +39,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);
+  final isLabelsLoaded = RxBool(false);
   final GlobalKey labelAppBarKey = GlobalKey();
 
   GetAllLabelInteractor? _getAllLabelInteractor;
@@ -74,11 +75,17 @@ class LabelController extends BaseController with LabelContextMenuMixin {
       isLabelSettingEnabled.value = false;
       isLabelSettingEnabled.refresh();
       _clearLabelData();
+      setLabelLoaded();
     }
+  }
+
+  void setLabelLoaded() {
+    isLabelsLoaded.value = true;
   }
 
   void _clearLabelData() {
     labels.clear();
+    isLabelsLoaded.value = false;
   }
 
   void injectLabelsBindings() {
@@ -116,7 +123,11 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   }
 
   void getAllLabels(AccountId accountId) {
-    if (_getAllLabelInteractor == null) return;
+    if (_getAllLabelInteractor == null) {
+      labels.value = [];
+      setLabelLoaded();
+      return;
+    }
 
     consumeState(_getAllLabelInteractor!.execute(accountId));
   }
@@ -175,6 +186,9 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     if (isEnabled) {
       injectLabelsBindings();
       getAllLabels(accountId);
+    } else {
+      _clearLabelData();
+      setLabelLoaded();
     }
   }
 
@@ -183,6 +197,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
       setCurrentLabelState(success.newState);
+      setLabelLoaded();
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
@@ -200,12 +215,14 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
       labels.value = [];
+      setLabelLoaded();
     } else if (failure is CreateNewLabelFailure) {
       _handleCreateNewLabelFailure(failure);
     } else if (failure is GetLabelSettingStateFailure) {
       isLabelSettingEnabled.value = false;
       isLabelSettingEnabled.refresh();
       _clearLabelData();
+      setLabelLoaded();
     } else if (failure is EditLabelFailure) {
       handleEditLabelFailure(failure);
     } else if (failure is DeleteALabelFailure) {
