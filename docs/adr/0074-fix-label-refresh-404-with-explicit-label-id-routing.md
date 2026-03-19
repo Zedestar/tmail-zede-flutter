@@ -2,22 +2,22 @@
 
 Date: 2026-03-18
 
-### Status
+## Status
 
 Proposed
 
-### Context
+## Context
 
 Refreshing a label view on web results in a 404 error because label IDs are incorrectly interpreted as `mailboxId` from the URL.
 
-### Decision
+## Decision
 
 Introduce an explicit `labelId` query parameter to distinguish labels from mailboxes in routing.
 
 * Mailbox: `/dashboard?context=<mailboxId>`
 * Label: `/dashboard?labelId=<labelId>`
 
-### Consequences
+## Consequences
 
 * ✅ Fixes 404 on refresh
 * ✅ Enables correct deep linking and bookmarking
