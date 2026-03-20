@@ -5,6 +5,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/manager/app_security_manager.dart';
 import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/utils/asset_preloader.dart';
@@ -20,6 +21,10 @@ Future<void> runTmail() async {
 Future<void> runTmailPreload() async {
   ThemeUtils.setSystemLightUIStyle();
 
+  if (PlatformInfo.isAndroid) {
+    await AppSecurityManager.instance.init();
+  }
+
   await Future.wait([
     MainBindings().dependencies(),
     HiveCacheConfig.instance.setUp(),
@@ -29,7 +34,10 @@ Future<void> runTmailPreload() async {
 
   await Get.find<Executor>().warmUp(log: BuildUtils.isDebugMode);
   await CozyIntegration.integrateCozy();
-  await HiveCacheConfig.instance.initializeEncryptionKey();
+
+  if (!PlatformInfo.isAndroid) {
+    await HiveCacheConfig.instance.initializeEncryptionKey();
+  }
 
   if (PlatformInfo.isWeb) {
     setPathUrlStrategy();

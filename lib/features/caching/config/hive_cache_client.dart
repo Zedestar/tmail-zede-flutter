@@ -2,8 +2,10 @@ import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/manager/app_security_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
 abstract class HiveCacheClient<T> {
@@ -12,7 +14,18 @@ abstract class HiveCacheClient<T> {
 
   bool get encryption => false;
 
-  Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
+  Future<Uint8List?> _getEncryptionKey() async {
+    try {
+      if (PlatformInfo.isAndroid) {
+        return await AppSecurityManager.instance.getKey();
+      } else {
+        return await HiveCacheConfig.instance.getEncryptionKey();
+      }
+    } catch (e) {
+      logWarning('$runtimeType::_getEncryptionKey: Exception $e');
+      return null;
+    }
+  }
 
   Future<IsolatedBox<T>> openIsolatedBox() async {
     if (IsolatedHive.isBoxOpen(tableName)) {
@@ -20,10 +33,16 @@ abstract class HiveCacheClient<T> {
     } else {
       if (encryption) {
         final encryptionKey = await _getEncryptionKey();
+
+        if (encryptionKey == null) {
+          throw Exception(
+            '$runtimeType: Encryption enabled but key is null',
+          );
+        }
+
         return IsolatedHive.openBox<T>(
           tableName,
-          encryptionCipher:
-              encryptionKey != null ? HiveAesCipher(encryptionKey) : null,
+          encryptionCipher: HiveAesCipher(encryptionKey),
         );
       } else {
         return IsolatedHive.openBox<T>(tableName);
@@ -37,10 +56,16 @@ abstract class HiveCacheClient<T> {
     } else {
       if (encryption) {
         final encryptionKey = await _getEncryptionKey();
+
+        if (encryptionKey == null) {
+          throw Exception(
+            '$runtimeType: Encryption enabled but key is null',
+          );
+        }
+
         return Hive.openBox<T>(
           tableName,
-          encryptionCipher:
-              encryptionKey != null ? HiveAesCipher(encryptionKey) : null,
+          encryptionCipher: HiveAesCipher(encryptionKey),
         );
       } else {
         return Hive.openBox<T>(tableName);
@@ -336,6 +361,10 @@ abstract class HiveCacheClient<T> {
       if (Hive.isBoxOpen(tableName)) {
         await Hive.box<T>(tableName).close();
       }
+    }
+
+    if (PlatformInfo.isAndroid) {
+      AppSecurityManager.instance.clearKey();
     }
   }
 }

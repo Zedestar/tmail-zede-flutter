@@ -9,15 +9,14 @@ import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/caching/config/secure_storage_factory.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/permissions/permission_service.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -87,13 +86,7 @@ class CoreBindings extends Bindings {
   }
 
   void _bindingStorage() {
-    Get.put(const FlutterSecureStorage(
-      iOptions: IOSOptions(
-        groupId: AppConfig.iOSKeychainSharingGroupId,
-        accountName: AppConfig.iOSKeychainSharingService,
-        accessibility: KeychainAccessibility.first_unlock_this_device
-      )
-    ));
+    Get.put(SecureStorageFactory.create());
     Get.put(LocalStorageManager());
     Get.put(SessionStorageManager());
   }
