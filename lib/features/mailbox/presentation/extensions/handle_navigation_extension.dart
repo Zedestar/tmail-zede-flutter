@@ -38,22 +38,38 @@ extension HandleNavigationExtension on MailboxController {
 
   void _waitForLabelsLoaded(VoidCallback onLoaded) {
     isLabelsLoadedWorker?.dispose();
+    isLabelsLoadedWorker = null;
+
+    final observable = mailboxDashBoardController.labelController.isLabelsLoaded;
+
+    if (observable.value) {
+      onLoaded();
+      return;
+    }
+
     isLabelsLoadedWorker = ever(
-      mailboxDashBoardController.labelController.isLabelsLoaded,
+      observable,
       (isLoaded) {
         try {
           if (!isLoaded) return;
-          final worker = isLabelsLoadedWorker;
-          isLabelsLoadedWorker = null;
-          worker?.dispose();
-          if (!isClosed) {
-            onLoaded();
-          }
+          _completeLabelsLoaded(onLoaded);
         } catch (e) {
           logWarning('HandleNavigationExtension::_waitForLabelsLoaded: Exception: $e');
         }
       },
     );
+  }
+
+  void _completeLabelsLoaded(VoidCallback onLoaded) {
+    final worker = isLabelsLoadedWorker;
+    if (worker == null) return;
+
+    isLabelsLoadedWorker = null;
+    worker.dispose();
+
+    if (!isClosed) {
+      onLoaded();
+    }
   }
 
   void _handleLabelNavigationInternal(
