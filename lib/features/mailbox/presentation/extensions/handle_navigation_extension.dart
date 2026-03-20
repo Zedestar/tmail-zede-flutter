@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
@@ -36,14 +37,18 @@ extension HandleNavigationExtension on MailboxController {
   }
 
   void _waitForLabelsLoaded(VoidCallback onLoaded) {
-    late Worker worker;
-
-    worker = ever(
+    isLabelsLoadedWorker ??= ever(
       mailboxDashBoardController.labelController.isLabelsLoaded,
       (isLoaded) {
-        if (isLoaded != true) return;
-        worker.dispose();
-        onLoaded();
+        try {
+          if (!isLoaded) return;
+          isLabelsLoadedWorker?.dispose();
+          if (!isClosed) {
+            onLoaded();
+          }
+        } catch (e) {
+          logWarning('HandleNavigationExtension::_waitForLabelsLoaded: Exception: $e');
+        }
       },
     );
   }

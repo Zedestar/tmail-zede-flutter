@@ -134,6 +134,7 @@ class MailboxController extends BaseMailboxController
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  Worker? isLabelsLoadedWorker;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
@@ -146,8 +147,6 @@ class MailboxController extends BaseMailboxController
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
-
-  NavigationRouter? get navigationRouter => _navigationRouter;
 
   MailboxController(
     this._createNewMailboxInteractor,
@@ -201,6 +200,8 @@ class MailboxController extends BaseMailboxController
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
     _webSocketQueueHandler?.dispose();
+    isLabelsLoadedWorker?.dispose();
+    isLabelsLoadedWorker = null;
     super.onClose();
   }
 
