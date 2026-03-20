@@ -42,7 +42,9 @@ extension HandleNavigationExtension on MailboxController {
       (isLoaded) {
         try {
           if (!isLoaded) return;
-          isLabelsLoadedWorker?.dispose();
+          final worker = isLabelsLoadedWorker;
+          isLabelsLoadedWorker = null;
+          worker?.dispose();
           if (!isClosed) {
             onLoaded();
           }
