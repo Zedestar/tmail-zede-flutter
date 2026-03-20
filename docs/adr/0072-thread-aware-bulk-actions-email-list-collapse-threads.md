@@ -56,14 +56,14 @@ When users perform actions on:
 the system must resolve:
 
 ```text
-ThreadId → List<EmailId>
+ThreadId → List<EmailInThreadDetailInfo>
 ```
 
 Key challenges:
 
 * N+1 API calls (`getThreadById`)
 * Partial failures (one thread fails while others succeed)
-* Duplicate `EmailId`s when merging results
+* Duplicate `EmailInThreadDetailInfo`s when merging results
 * High latency with large selections
 * Existing interactors are not designed for thread-level inputs
 
@@ -82,7 +82,7 @@ Thread-aware Interactor (Stream<UIState>)
     ↓
 ThreadExpansionService
     ↓
-List<EmailId> (deduplicated & pagination-safe)
+List<EmailInThreadDetailInfo> (deduplicated & pagination-safe)
     ↓
 Existing Email Interactor (Stream)
     ↓
@@ -93,7 +93,7 @@ UI State Update (Optimistic + Server Sync)
 
 ### Responsibility
 
-* Convert `List<ThreadId>` → `List<EmailId>`
+* Convert `List<ThreadId>` → `List<EmailInThreadDetailInfo>`
 * Reuse `ThreadDetailRepository.getThreadById`
 * Handle:
 
@@ -112,11 +112,11 @@ so we just need to call and use them.
 
 ```dart
 class ThreadExpansionResult {
-  final List<EmailId> emailIds;
+  final List<EmailInThreadDetailInfo> emailThreadInfos;
   final Map<ThreadId, Object> errors;
 
   ThreadExpansionResult({
-    required this.emailIds,
+    required this.emailThreadInfos,
     required this.errors,
   });
 }
@@ -128,7 +128,7 @@ class ThreadExpansionResult {
 class ThreadExpansionService {
   final ThreadDetailRepository threadDetailRepository;
 
-  final Map<ThreadId, List<EmailId>> _cache = {};
+  final Map<ThreadId, List<EmailInThreadDetailInfo>> _cache = {};
 
   ThreadExpansionService(this.threadDetailRepository);
 
@@ -139,7 +139,7 @@ class ThreadExpansionService {
     required MailboxId sentMailboxId,
     required String ownEmailAddress,
   }) async {
-    final emailIds = <EmailId>{};
+    final emailThreadInfos = <EmailInThreadDetailInfo>{};
     final errors = <ThreadId, Object>{};
 
     final futures = threadIds.map((threadId) async {
@@ -158,13 +158,8 @@ class ThreadExpansionService {
           ownEmailAddress,
         );
 
-        final ids = threadDetails
-            .map((e) => e.emailId)
-            .whereType<EmailId>()
-            .toList();
-
-        _cache[threadId] = ids;
-        emailIds.addAll(ids);
+        _cache[threadId] = threadDetails;
+        emailIds.addAll(threadDetails);
       } catch (e) {
         // Error isolation
         errors[threadId] = e;
@@ -174,7 +169,7 @@ class ThreadExpansionService {
     await Future.wait(futures);
 
     return ThreadExpansionResult(
-      emailIds: emailIds.toList(),
+      emailThreadInfos: emailThreadInfos.toList(),
       errors: errors,
     );
   }
@@ -201,7 +196,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 
 class ThreadActionResult {
-  final List<EmailId> success;
+  final List<EmailInThreadDetailInfo> success;
   final Map<Id, SetError> actionErrors;
   final Map<ThreadId, Object> expansionErrors;
 
@@ -234,7 +229,7 @@ class MarkAsThreadReadInteractor {
     required String ownEmailAddress,
     required ReadActions readAction,
     List<ThreadId> threadIds = const [],
-    List<EmailId> emailIds = const [],
+    List<EmailInThreadDetailInfo> emailThreadInfos = const [],
   }) async* {
     yield Right(LoadingMarkAsThreadRead());
     
@@ -246,12 +241,12 @@ class MarkAsThreadReadInteractor {
       ownEmailAddress: ownEmailAddress,
     );
 
-    final allEmailIds = {
-      ...emailIds,
-      ...expansion.emailIds,
+    final allEmailThreadInfos = {
+      ...emailThreadInfos,
+      ...expansion.emailThreadInfos,
     }.toList();
 
-    if (allEmailIds.isEmpty) {
+    if (allEmailThreadInfos.isEmpty) {
       yield Left(MarkAsThreadReadFailure(ThreadActionResult(
         success: [],
         actionErrors: {},
@@ -263,7 +258,7 @@ class MarkAsThreadReadInteractor {
     final result = await emailRepository.markAsRead(
       session,
       accountId,
-      emailIds,
+      allEmailThreadInfos.emailIds,
       readAction,
     );
 
@@ -293,9 +288,9 @@ class MoveThreadInteractor {
     required AccountId accountId,
     required MailboxId sentMailboxId,
     required String ownEmailAddress,
-    required MoveToMailboxRequest moveRequest,
+    required MailboxId destinationMailboxId,
     List<ThreadId> threadIds = const [],
-    List<EmailId> emailIds = const [],
+    List<EmailInThreadDetailInfo> emailThreadInfos = const [],
   }) async* {
     yield Right(LoadingMoveThread());
     
@@ -307,12 +302,12 @@ class MoveThreadInteractor {
       ownEmailAddress: ownEmailAddress,
     );
 
-     final allEmailIds = {
-       ...emailIds,
-      ...expansion.emailIds,
-     }.toList();
+    final allEmailThreadInfos = {
+      ...emailThreadInfos,
+      ...expansion.emailThreadInfos,
+    }.toList();
     
-     if (allEmailIds.isEmpty) {
+     if (allEmailThreadInfos.isEmpty) {
        yield Left(MarkAsThreadReadFailure(ThreadActionResult(
          success: [],
          actionErrors: {},
@@ -321,6 +316,8 @@ class MoveThreadInteractor {
        return;
     }
 
+    final moveRequest = MoveToMailboxRequest.fromThreadInfos(threadInfos: allEmailThreadInfos);
+     
     final result = await emailRepository.moveToMailbox(session, accountId, moveRequest);
 
     yield Right(MarkAsThreadReadSuccess(ThreadActionResult(
@@ -559,16 +556,16 @@ If WebSocket pushes state:
 
 ```dart
 
-final allEmailIds = {
-  ...emailIds,
-  ...expandedEmailIds,
+final allEmailThreadInfos = {
+  ...emailThreadInfos,
+  ...expandedEmailThreadInfos,
 };
 ```
 
 ### Cache
 
 ```dart
-Map<ThreadId, List<EmailId>>
+Map<ThreadId, List<EmailInThreadDetailInfo>>
 ```
 
 * Reduces repeated calls to `getThreadById`
@@ -587,7 +584,6 @@ await Future.wait(...);
 Cache must be cleared when:
 
 * Mailbox sync occurs
-* Email state changes (read, star, move, delete)
 * Thread content changes
 * Websocket event (Refresh change invoke )
 * `collapseThreads` is toggled
@@ -600,10 +596,10 @@ expansionService.clearCache();
 
 Hook `expansionService.clearCache()` in:
 
-- `ThreadController.refreshAllEmail()`, `ThreadController.refreshChangeEmail()` after mailbox sync completes (see lib/features/thread/presentation/thread_controller.dart)
-- `MarkAsThreadReadInteractor`, `MoveThreadInteractor`, etc. after calling `clearCache()` post-action
+- `ThreadController.refreshAllEmail()` after mailbox sync completes (see lib/features/thread/presentation/thread_controller.dart)
+- `ThreadController.refreshChangeEmail()` after calling `clearCache()` post-action
 - Settings controller's `onCollapseThreadsToggled()` callback (or equivalent setter)
-- `ThreadDetailRepository` observers when `getThreadById` detects membership changes
+- Thread actions are performed
 
 ## Consequences
 
@@ -630,7 +626,7 @@ Thread Action Flow:
 
 ThreadIds
   → expandThreads (parallel + cache + error-isolated)
-  → extract EmailIds
+  → extract EmailInThreadDetailInfo
   → deduplicate
   → call existing Email Interactor
   → return (success + actionErrors + expansionErrors)
