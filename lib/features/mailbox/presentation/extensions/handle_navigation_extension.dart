@@ -37,7 +37,8 @@ extension HandleNavigationExtension on MailboxController {
   }
 
   void _waitForLabelsLoaded(VoidCallback onLoaded) {
-    isLabelsLoadedWorker ??= ever(
+    isLabelsLoadedWorker?.dispose();
+    isLabelsLoadedWorker = ever(
       mailboxDashBoardController.labelController.isLabelsLoaded,
       (isLoaded) {
         try {
