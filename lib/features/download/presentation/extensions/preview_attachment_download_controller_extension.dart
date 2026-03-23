@@ -51,7 +51,7 @@ import 'package:twake_previewer_flutter/core/previewer_options/options/previewer
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
 import 'package:twake_previewer_flutter/twake_image_previewer/twake_image_previewer.dart';
-import 'package:twake_previewer_flutter/twake_plain_text_previewer/twake_plain_text_previewer.dart';
+import 'package:tmail_ui_user/features/download/presentation/widgets/plain_text_preview_dialog.dart';
 
 typedef OnPreviewOrDownloadAttachmentAction = void Function(
   Attachment attachment,
@@ -671,6 +671,47 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
     );
   }
 
+  /// Detects charset by scanning raw bytes — no String allocation, O(n) with
+  /// early exit on first invalid byte. Checks UTF-8 BOM first for O(1) fast path.
+  SupportedCharset _detectCharset(Uint8List bytes) {
+    if (bytes.isEmpty) return SupportedCharset.utf8;
+
+    // Fast path: UTF-8 BOM (EF BB BF)
+    if (bytes.length >= 3 &&
+        bytes[0] == 0xEF &&
+        bytes[1] == 0xBB &&
+        bytes[2] == 0xBF) {
+      return SupportedCharset.utf8;
+    }
+
+    // Scan bytes to validate UTF-8 sequences without allocating a String.
+    // Returns latin1 on first invalid byte so the previewer never throws.
+    int i = 0;
+    while (i < bytes.length) {
+      final b = bytes[i];
+      int trailing;
+      if (b & 0x80 == 0) {
+        i++;
+        continue; // ASCII byte — valid
+      } else if (b & 0xE0 == 0xC0) {
+        trailing = 1;
+      } else if (b & 0xF0 == 0xE0) {
+        trailing = 2;
+      } else if (b & 0xF8 == 0xF0) {
+        trailing = 3;
+      } else {
+        return SupportedCharset.latin1; // Invalid lead byte
+      }
+      i++;
+      for (int j = 0; j < trailing; j++, i++) {
+        if (i >= bytes.length || (bytes[i] & 0xC0) != 0x80) {
+          return SupportedCharset.latin1; // Missing/invalid continuation byte
+        }
+      }
+    }
+    return SupportedCharset.utf8;
+  }
+
   void previewPlainTextFile({
     required String fileName,
     required Uint8List fileBytes,
@@ -680,21 +721,17 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
     log('$runtimeType::previewPlainTextFile: Attachment fileName is $fileName');
     if (context == null) return;
 
+    final charset = _detectCharset(fileBytes);
+
     Navigator.of(context).push(
       GetDialogRoute(
         pageBuilder: (context, _, __) => PointerInterceptor(
-          child: TwakePlainTextPreviewer(
-            supportedCharset: SupportedCharset.utf8,
+          child: PlainTextPreviewDialog(
+            fileName: fileName,
             bytes: fileBytes,
-            previewerOptions: PreviewerOptions(
-              previewerState: PreviewerState.success,
-              width: context.width * 0.8,
-            ),
-            topBarOptions: TopBarOptions(
-              title: fileName,
-              onClose: () => Navigator.maybePop(context),
-              onDownload: () => onDownloadWebFileAction(fileName, fileBytes),
-            ),
+            initialCharset: charset,
+            onClose: () => Navigator.maybePop(context),
+            onDownload: onDownloadWebFileAction,
           ),
         ),
         barrierDismissible: false,
