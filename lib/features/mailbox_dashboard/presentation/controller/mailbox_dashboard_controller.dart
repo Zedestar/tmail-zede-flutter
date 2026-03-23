@@ -392,6 +392,7 @@ class MailboxDashBoardController extends ReloadableController
       _registerDeepLinks();
     }
     _registerStreamListener();
+    _registerReactiveObxListener();
     registerLabelReactiveObxListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -796,6 +797,19 @@ class MailboxDashBoardController extends ReloadableController
     _registerLocalNotificationStreamListener();
 
     _registerDownloadUIActionListener();
+  }
+
+  void _registerReactiveObxListener() {
+    workerObxVariables.add(ever(selectedMailbox, _onSelectedMailboxChanged));
+    workerObxVariables.add(ever(dashboardRoute, _onDashboardRoute));
+  }
+
+  void _onSelectedMailboxChanged(PresentationMailbox? mailbox) {
+    spamReportController.updateSpamBannerVisibility();
+  }
+
+  void _onDashboardRoute(DashboardRoutes? route) {
+    spamReportController.updateSpamBannerVisibility();
   }
 
   void _registerLocalNotificationStreamListener() {

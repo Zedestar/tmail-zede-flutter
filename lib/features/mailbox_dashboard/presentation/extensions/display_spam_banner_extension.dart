@@ -44,10 +44,11 @@ extension DisplaySpamBannerExtension on MailboxDashBoardController {
   }
 
   void _openSpamMailbox() {
-    spamReportController.setSpamPresentationMailbox(null);
-
     PresentationMailbox? spamMailbox =
         spamReportController.presentationSpamMailbox.value;
+
+    spamReportController.setSpamPresentationMailbox(null);
+
     if (spamMailbox == null && spamMailboxId != null) {
       spamMailbox = mapMailboxById[spamMailboxId];
     }
@@ -58,9 +59,10 @@ extension DisplaySpamBannerExtension on MailboxDashBoardController {
   }
 
   void _dismissSpamBanner(AppLocalizations appLocalizations) {
+    final spamMailbox = spamReportController.presentationSpamMailbox.value;
+
     spamReportController.setSpamPresentationMailbox(null);
 
-    final spamMailbox = spamReportController.presentationSpamMailbox.value;
     if (spamMailbox == null) {
       emitFailure(
         controller: this,
@@ -96,7 +98,6 @@ extension DisplaySpamBannerExtension on MailboxDashBoardController {
       );
       return;
     }
-
 
     markAsReadMailbox(
       session,

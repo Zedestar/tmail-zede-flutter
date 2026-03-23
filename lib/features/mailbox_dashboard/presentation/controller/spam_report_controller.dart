@@ -85,7 +85,7 @@ class SpamReportController extends BaseController {
   void _loadSpamReportConfigSuccess(SpamReportState newState) {
     setSpamReportState(newState);
     _spamReportLoaderStatus = LoaderStatus.completed;
-    _updateSpamBannerVisibility();
+    updateSpamBannerVisibility();
   }
 
   void getSpamMailboxCached(AccountId accountId, UserName userName) {
@@ -125,14 +125,14 @@ class SpamReportController extends BaseController {
 
   void setSpamPresentationMailbox(PresentationMailbox? spamMailbox) {
     presentationSpamMailbox.value = spamMailbox;
-    _updateSpamBannerVisibility();
+    updateSpamBannerVisibility();
   }
 
   void _setSpamBannerVisibility(bool isVisible) {
     isSpamBannerVisible.value = isVisible;
   }
 
-  void _updateSpamBannerVisibility() {
+  void updateSpamBannerVisibility() {
     final dashboardController = getBinding<MailboxDashBoardController>();
     if (dashboardController == null) {
       _setSpamBannerVisibility(false);
