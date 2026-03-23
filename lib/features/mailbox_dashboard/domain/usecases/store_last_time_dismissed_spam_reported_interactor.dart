@@ -4,10 +4,10 @@ import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/store_last_time_dismissed_spam_reported_state.dart';
 
-class StoreSpamReportInteractor {
+class StoreLastTimeDismissedSpamReportedInteractor {
   final SpamReportRepository _spamReportRepository;
 
-  StoreSpamReportInteractor(this._spamReportRepository);
+  StoreLastTimeDismissedSpamReportedInteractor(this._spamReportRepository);
 
   Stream<Either<Failure, Success>> execute(DateTime lastTimeDismissedSpamReported) async* {
     try {

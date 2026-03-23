@@ -205,7 +205,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
 
     Get.put(SpamReportController(
-      Get.find<StoreSpamReportInteractor>(),
+      Get.find<StoreLastTimeDismissedSpamReportedInteractor>(),
       Get.find<StoreSpamReportStateInteractor>(),
       Get.find<GetSpamReportStateInteractor>(),
       Get.find<GetSpamMailboxCachedInteractor>()));
@@ -385,7 +385,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetEmailByIdInteractor(
       Get.find<ThreadRepository>(),
       Get.find<EmailRepository>()));
-    Get.lazyPut(() => StoreSpamReportInteractor(
+    Get.lazyPut(() => StoreLastTimeDismissedSpamReportedInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => StoreSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));

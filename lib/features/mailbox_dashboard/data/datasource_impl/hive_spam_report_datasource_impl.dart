@@ -18,17 +18,12 @@ class HiveSpamReportDataSourceImpl extends SpamReportDataSource {
   HiveSpamReportDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
 
   @override
-  Future<bool> deleteLastTimeDismissedSpamReported() {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(Session session, AccountId accountId, {MailboxFilterCondition? mailboxFilterCondition, UnsignedInt? limit}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<DateTime> getLastTimeDismissedSpamReported() {
+  Future<int> getLastTimeDismissedSpamReported() {
     throw UnimplementedError();
   }
 

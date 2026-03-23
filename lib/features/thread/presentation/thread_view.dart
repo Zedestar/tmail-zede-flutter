@@ -13,7 +13,6 @@ import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
@@ -22,7 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/display_spam_banner_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -66,6 +65,9 @@ class ThreadView extends GetWidget<ThreadController>
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    final isDesktop = controller.responsiveUtils.isDesktop(context);
+
     final bodyWidget = Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -123,49 +125,10 @@ class ThreadView extends GetWidget<ThreadController>
                           hintTextSearch: AppLocalizations.of(context).search_emails,
                           onOpenSearchViewAction: controller.goToSearchView
                         ),
-                        Obx(() {
-                          final spamController = controller
-                              .mailboxDashBoardController
-                              .spamReportController;
-
-                          final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
-
-                          final isSpamFolderSelected = controller
-                              .mailboxDashBoardController
-                              .selectedMailbox
-                              .value
-                              ?.isSpam == true;
-
-                          final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
-
-                          if (isSpamReportDisabled ||
-                            isPresentationSpamMailboxIsNull ||
-                            isSpamFolderSelected) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return ReportMessageBanner(
-                            imagePaths: controller.imagePaths,
-                            message: AppLocalizations
-                              .of(context)
-                              .countMessageInSpam(
-                                spamController.numberOfUnreadSpamEmails,
-                              ),
-                            positiveName: AppLocalizations.of(context).view,
-                            margin: ThreadViewStyle.getBannerMargin(
-                              context,
-                              controller.responsiveUtils,
-                            ),
-                            isDesktop: controller
-                              .responsiveUtils
-                              .isDesktop(context),
-                            onPositiveAction: spamController.openMailbox,
-                            onNegativeAction: () =>
-                              spamController.dismissSpamReportAction(
-                                context,
-                              ),
-                          );
-                        }),
+                        controller.mailboxDashBoardController.buildSpamBanner(
+                          appLocalizations: appLocalizations,
+                          isDesktop: isDesktop,
+                        ),
                         QuotasBannerWidget(),
                         Obx(() {
                           final vacation = controller.mailboxDashBoardController.vacationResponse.value;

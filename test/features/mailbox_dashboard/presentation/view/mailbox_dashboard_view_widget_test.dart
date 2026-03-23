@@ -65,7 +65,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
@@ -456,7 +455,7 @@ void main() {
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
 
-        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.isSpamBannerVisible).thenReturn(RxBool(false));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
         when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
@@ -534,7 +533,7 @@ void main() {
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
 
-        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.isSpamBannerVisible).thenReturn(RxBool(false));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
         when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
@@ -599,7 +598,7 @@ void main() {
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
 
-        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.isSpamBannerVisible).thenReturn(RxBool(false));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
         when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
@@ -661,7 +660,7 @@ void main() {
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
 
-        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.isSpamBannerVisible).thenReturn(RxBool(false));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
         when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
@@ -719,7 +718,7 @@ void main() {
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
 
-        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.isSpamBannerVisible).thenReturn(RxBool(false));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
         when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));

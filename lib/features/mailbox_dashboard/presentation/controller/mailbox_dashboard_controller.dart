@@ -2515,33 +2515,16 @@ class MailboxDashBoardController extends ReloadableController
 
   bool get enableSpamReport => spamReportController.enableSpamReport;
 
-  void getSpamReportBanner() {
-    if (enableSpamReport) {
-      final spamId = spamMailboxId;
-      if (spamId == null) {
-        spamReportController.setSpamPresentationMailbox(null);
-        return;
-      }
-
-      final spamMailbox = mapMailboxById[spamId];
-      final unreadEmails = spamMailbox?.unreadEmails?.value.value ?? 0;
-      if (unreadEmails > 0) {
-        spamReportController.setSpamPresentationMailbox(spamMailbox);
-      } else {
-        spamReportController.setSpamPresentationMailbox(null);
-      }
-    }
-  }
-
   void refreshSpamReportBanner() {
     if (enableSpamReport && sessionCurrent != null && accountId.value != null) {
       spamReportController.getSpamMailboxCached(accountId.value!, sessionCurrent!.username);
+    } else {
+      spamReportController.setSpamPresentationMailbox(null);
     }
   }
 
-  void storeSpamReportStateAction() {
-    final storeSpamReportState = enableSpamReport ? SpamReportState.disabled : SpamReportState.enabled;
-    spamReportController.storeSpamReportStateAction(storeSpamReportState);
+  void storeSpamReportStateAction(SpamReportState newState) {
+    spamReportController.storeSpamReportStateAction(newState);
   }
 
   void onDragMailbox(bool isDragging) {

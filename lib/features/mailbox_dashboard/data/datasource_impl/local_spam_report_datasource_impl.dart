@@ -21,12 +21,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
   );
 
   @override
-  Future<DateTime> getLastTimeDismissedSpamReported() async {
+  Future<int> getLastTimeDismissedSpamReported() async {
     return Future.sync(() async {
       final spamReportConfig = await _preferencesSettingManager.getSpamReportConfig();
-      return DateTime.fromMillisecondsSinceEpoch(
-        spamReportConfig.lastTimeDismissedMilliseconds,
-      );
+      return spamReportConfig.lastTimeDismissedMilliseconds;
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -38,15 +36,6 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
       return await _preferencesSettingManager.updateSpamReport(
         lastTimeDismissedMilliseconds:
             lastTimeDismissedSpamReported.millisecondsSinceEpoch,
-      );
-    }).catchError(_exceptionThrower.throwException);
-  }
-
-  @override
-  Future<void> deleteLastTimeDismissedSpamReported() {
-    return Future.sync(() async {
-      return await _preferencesSettingManager.updateSpamReport(
-        lastTimeDismissedMilliseconds: 0,
       );
     }).catchError(_exceptionThrower.throwException);
   }

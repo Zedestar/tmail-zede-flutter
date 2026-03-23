@@ -67,6 +67,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
@@ -355,8 +356,14 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         openMailboxInNewTabAction(mailbox);
         break;
       case MailboxActions.disableSpamReport:
+        dashboardController.storeSpamReportStateAction(
+          SpamReportState.disabled,
+        );
+        break;
       case MailboxActions.enableSpamReport:
-        dashboardController.storeSpamReportStateAction();
+        dashboardController.storeSpamReportStateAction(
+          SpamReportState.enabled,
+        );
         break;
       case MailboxActions.confirmMailSpam:
       case MailboxActions.markAsRead:

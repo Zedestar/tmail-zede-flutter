@@ -114,6 +114,7 @@ class LocalBindings extends Bindings {
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<EncryptionKeyCacheManager>(),
       Get.find<AuthenticationInfoCacheManager>(),
+      Get.find<PreferencesSettingManager>(),
     ));
   }
 

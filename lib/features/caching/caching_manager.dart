@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -42,6 +43,7 @@ class CachingManager {
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final EncryptionKeyCacheManager _encryptionKeyCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
+  final PreferencesSettingManager _preferencesSettingManager;
 
   CachingManager(
     this._mailboxCacheManager,
@@ -63,6 +65,7 @@ class CachingManager {
     this._oidcConfigurationCacheManager,
     this._encryptionKeyCacheManager,
     this._authenticationInfoCacheManager,
+    this._preferencesSettingManager,
   );
 
   Future<void> clearAll() async {
@@ -91,6 +94,7 @@ class CachingManager {
           ],
         if (PlatformInfo.isIOS)
           _keychainSharingManager.delete(),
+        _preferencesSettingManager.clearPreferences(),
       ], eagerError: true);
     } catch (e) {
       logWarning('CachingManager::clearMailDataCached: Cannot clear mail data cache: $e');

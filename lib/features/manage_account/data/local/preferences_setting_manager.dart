@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
@@ -182,5 +183,20 @@ class PreferencesSettingManager {
     final currentConfig = await getLabelConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
     await savePreferences(updatedConfig);
+  }
+
+  Future<void> clearPreferences() async {
+    try {
+      await Future.wait([
+        _sharedPreferences.remove(_preferencesSettingThreadKey),
+        _sharedPreferences.remove(_preferencesSettingSpamReportKey),
+        _sharedPreferences.remove(_preferencesSettingTextFormattingMenuKey),
+        _sharedPreferences.remove(_preferencesSettingAIScribeKey),
+        _sharedPreferences.remove(_preferencesSettingLabelKey),
+      ]);
+    } catch (e) {
+      logWarning(
+          'PreferencesSettingManager::clearPreferences: Cannot clear preferences: $e');
+    }
   }
 }

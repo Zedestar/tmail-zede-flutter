@@ -12,7 +12,7 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   SpamReportRepositoryImpl(this.mapDataSource);
 
   @override
-  Future<DateTime> getLastTimeDismissedSpamReported() async {
+  Future<int> getLastTimeDismissedSpamReported() async {
    return await mapDataSource[DataSourceType.local]!.getLastTimeDismissedSpamReported();
   }
   
@@ -21,11 +21,6 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
    return mapDataSource[DataSourceType.local]!.storeLastTimeDismissedSpamReported(lastTimeDismissedSpamReported);
   }
   
-  @override
-  Future<void> deleteLastTimeDismissedSpamReported() {
-    return mapDataSource[DataSourceType.local]!.deleteLastTimeDismissedSpamReported();
-  }
-
   @override
   Future<SpamReportState> getSpamReportState() async {
     return await mapDataSource[DataSourceType.local]!.getSpamReportState();

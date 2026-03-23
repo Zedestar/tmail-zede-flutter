@@ -10,16 +10,15 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/display_spam_banner_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -52,7 +51,6 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_vi
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item_filter_message_action.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_web_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -64,6 +62,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    final isDesktop = controller.responsiveUtils.isDesktop(context);
+
     return Portal(
       child: Stack(children: [
         ResponsiveWidget(
@@ -193,44 +194,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               Obx(() => MarkMailboxAsReadLoadingBanner(
                                 viewState: controller.viewStateMailboxActionProgress.value,
                               )),
-                              Obx(() {
-                                final spamController = controller.spamReportController;
-
-                                final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
-
-                                final isSpamFolderSelected = controller
-                                    .selectedMailbox
-                                    .value
-                                    ?.isSpam == true;
-
-                                final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
-
-                          final isEmailOpened = controller.dashboardRoute.value == DashboardRoutes.threadDetailed;
-
-                          if (isSpamReportDisabled ||
-                              isPresentationSpamMailboxIsNull ||
-                              isSpamFolderSelected ||
-                              isEmailOpened) {
-                            return const SizedBox.shrink();
-                          }
-
-                                return ReportMessageBanner(
-                                  imagePaths: controller.imagePaths,
-                                  message: AppLocalizations
-                                    .of(context)
-                                    .countMessageInSpam(
-                                      spamController.numberOfUnreadSpamEmails,
-                                    ),
-                                  positiveName: AppLocalizations.of(context).view,
-                                  isDesktop: controller
-                                      .responsiveUtils
-                                      .isDesktop(context),
-                                  margin: SpamReportBannerWebStyles.bannerMargin,
-                                  onPositiveAction: spamController.openMailbox,
-                                  onNegativeAction: () =>
-                                      spamController.dismissSpamReportAction(context),
-                                );
-                              }),
+                              controller.buildSpamBanner(
+                                appLocalizations: appLocalizations,
+                                isDesktop: isDesktop,
+                              ),
                               QuotasBannerWidget(),
                               _buildVacationNotificationMessage(context),
                               Obx(() {

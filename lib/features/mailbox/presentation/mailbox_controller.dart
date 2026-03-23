@@ -83,6 +83,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -284,7 +285,7 @@ class MailboxController extends BaseMailboxController
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
-          mailboxDashBoardController.getSpamReportBanner();
+          mailboxDashBoardController.refreshSpamReportBanner();
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }
@@ -1219,8 +1220,14 @@ class MailboxController extends BaseMailboxController
         }
         break;
       case MailboxActions.disableSpamReport:
+        mailboxDashBoardController.storeSpamReportStateAction(
+          SpamReportState.disabled,
+        );
+        break;
       case MailboxActions.enableSpamReport:
-        mailboxDashBoardController.storeSpamReportStateAction();
+        mailboxDashBoardController.storeSpamReportStateAction(
+          SpamReportState.enabled,
+        );
         break;
       case MailboxActions.disableMailbox:
         _unsubscribeMailboxAction(mailbox.id);
