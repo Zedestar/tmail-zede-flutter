@@ -29,6 +29,7 @@ class Attachment with EquatableMixin {
   static const String eventICSSubtype = 'ics';
   static const String eventCalendarSubtype = 'calendar';
   static const String applicationRTFType = 'application/rtf';
+  static const String _defaultName = 'unknown-attachment';
 
   final PartId? partId;
   final Id? blobId;
@@ -72,10 +73,15 @@ class Attachment with EquatableMixin {
   }
 
   String generateFileName() {
-    if (name?.isNotEmpty == true) {
+    if (name?.trim().isNotEmpty == true) {
       return name!;
+    } else if (blobId != null) {
+      final extension = type?.subtype;
+      return extension != null
+          ? '${blobId!.value}.$extension'
+          : blobId!.value;
     } else {
-      return '${blobId?.value}.${type?.subtype}';
+      return _defaultName;
     }
   }
 
