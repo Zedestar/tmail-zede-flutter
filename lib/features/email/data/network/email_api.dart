@@ -277,7 +277,7 @@ class EmailAPI
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       getTemporaryDirectory(),
-      attachment.name ?? '',
+      attachment.generateFileName(),
       authentication,
       cancelToken: cancelToken);
   }
