@@ -43,7 +43,7 @@ We use the [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtoo
 
 5. **Follow the prompts** — log in to Twake Mail via OIDC in Chrome, then interact with the app (open emails, navigate folders, compose, search) when asked.
 
-Every now and then, manually scroll through the app using your mouse to make sure that the programmatic scrolling isn't skewing the data.
+Periodically, manually scroll through the app using your mouse to make sure that the programmatic scrolling isn't skewing the data.
 
 6. **What the AI does automatically**:
     - Connects to the running Chrome instance via the DevTools Protocol
