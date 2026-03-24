@@ -73,16 +73,16 @@ class Attachment with EquatableMixin {
   }
 
   String generateFileName() {
-    if (name?.trim().isNotEmpty == true) {
-      return name!;
-    } else if (blobId != null) {
-      final extension = type?.subtype;
-      return extension != null
-          ? '${blobId!.value}.$extension'
-          : blobId!.value;
-    } else {
-      return _defaultName;
-    }
+    final rawName = (name?.trim().isNotEmpty == true)
+        ? name!.trim()
+        : (blobId != null
+            ? (type?.subtype != null
+                ? '${blobId!.value}.${type!.subtype}'
+                : blobId!.value)
+            : _defaultName);
+
+    final sanitized = rawName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_').trim();
+    return sanitized.isNotEmpty ? sanitized : _defaultName;
   }
 
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);

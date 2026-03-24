@@ -78,7 +78,7 @@ void main() {
       });
 
       test(
-        'should return name when name has leading/trailing spaces',
+        'should return name is trimmed when name has leading/trailing spaces',
       () {
         final attachment = Attachment(
           blobId: Id('some-blob-id'),
@@ -86,7 +86,7 @@ void main() {
           type: MediaType.parse('application/pdf'),
         );
 
-        expect(attachment.generateFileName(), '  document.pdf  ');
+        expect(attachment.generateFileName(), 'document.pdf');
       });
 
       test(
