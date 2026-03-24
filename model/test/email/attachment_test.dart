@@ -143,6 +143,42 @@ void main() {
 
         expect(attachment.generateFileName(), 'unknown-attachment');
       });
+
+      test(
+        'should sanitize name with question mark character',
+      () {
+        final attachment = Attachment(
+          blobId: Id('some-blob-id'),
+          name: 'doc?.pdf',
+          type: MediaType.parse('application/pdf'),
+        );
+
+        expect(attachment.generateFileName(), 'doc_.pdf');
+      });
+
+      test(
+        'should sanitize name with forward slash character',
+      () {
+        final attachment = Attachment(
+          blobId: Id('some-blob-id'),
+          name: 'folder/document.pdf',
+          type: MediaType.parse('application/pdf'),
+        );
+
+        expect(attachment.generateFileName(), 'folder_document.pdf');
+      });
+
+      test(
+        'should return default name when name consists entirely of illegal characters',
+      () {
+        final attachment = Attachment(
+          blobId: Id('some-blob-id'),
+          name: '???',
+          type: MediaType.parse('application/pdf'),
+        );
+
+        expect(attachment.generateFileName(), 'unknown-attachment');
+      });
     });
   });
 }

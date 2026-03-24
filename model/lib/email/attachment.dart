@@ -82,7 +82,8 @@ class Attachment with EquatableMixin {
             : _defaultName);
 
     final sanitized = rawName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_').trim();
-    return sanitized.isNotEmpty ? sanitized : _defaultName;
+    // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
+    return sanitized.contains(RegExp(r'[^_\s]')) ? sanitized : _defaultName;
   }
 
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
