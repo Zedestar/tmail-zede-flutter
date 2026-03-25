@@ -17,6 +17,8 @@ class MailToAttendeesEventEmailScenario extends BaseTestScenario
     with OpenCalendarEventScenarioMixin {
   const MailToAttendeesEventEmailScenario(super.$);
 
+  static const _expectedEventTitle = 'Come for a chat';
+
   @override
   Future<void> runTestLogic() async {
     final threadRobot = ThreadRobot($);
@@ -51,7 +53,7 @@ class MailToAttendeesEventEmailScenario extends BaseTestScenario
     final actualSubject = composerController.subjectEmail.value ?? '';
 
     final expectedSubject = EmailUtils.applyPrefix(
-      subject: 'Come for a chat',
+      subject: _expectedEventTitle,
       defaultPrefix: EmailUtils.defaultReplyPrefix,
       localizedPrefix: appLocalizations.prefix_reply_email,
     );
