@@ -99,4 +99,8 @@ class EmailRobot extends CoreRobot {
   Future<void> tapDeleteThreadButton() async {
     await $(#delete_thread_button).tap();
   }
+
+  Future<void> tapMailToAttendeesEventActionButton() async {
+    await $(#mailToAttendees_event_action_button).tap();
+  }
 }

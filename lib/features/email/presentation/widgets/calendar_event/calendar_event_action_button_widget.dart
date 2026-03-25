@@ -40,6 +40,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
           .map((action) => AbsorbPointer(
             absorbing: _getCallbackFunction(action) == null,
             child: TMailButtonWidget(
+              key: action.getKeyButton(),
               text: action.getLabelButton(context),
               backgroundColor: _getButtonBackgroundColor(action),
               borderRadius: CalendarEventActionButtonWidgetStyles.borderRadius,

@@ -24,6 +24,8 @@ enum EventActionType {
     }
   }
 
+  Key getKeyButton() => Key('${name}_event_action_button');
+
   String getToastMessageSuccess(BuildContext context) {
     switch(this) {
       case EventActionType.yes:
