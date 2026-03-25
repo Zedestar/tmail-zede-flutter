@@ -24,6 +24,7 @@ class Label with EquatableMixin {
   final String? displayName;
   final HexColor? color;
   final String? description;
+  final bool? readOnly;
 
   Label({
     this.id,
@@ -31,6 +32,7 @@ class Label with EquatableMixin {
     this.displayName,
     this.color,
     this.description,
+    this.readOnly,
   });
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
@@ -44,5 +46,6 @@ class Label with EquatableMixin {
         displayName,
         color,
         description,
+        readOnly,
       ];
 }
