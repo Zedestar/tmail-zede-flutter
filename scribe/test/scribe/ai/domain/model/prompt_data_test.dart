@@ -129,7 +129,7 @@ void main() {
       expect(result.last.content, 'Task: test task value, Input: test input value');
     });
 
-    test('buildPrompt should not replace task placeholder when not provided', () {
+    test('buildPrompt should replace task placeholder with empty string when not provided', () {
       // Arrange
       final messages = [
         const AIMessage(role: AIRole.system, content: 'System message'),
@@ -145,7 +145,52 @@ void main() {
       expect(result.first.role, AIRole.system);
       expect(result.first.content, 'System message');
       expect(result.last.role, AIRole.user);
-      expect(result.last.content, 'Task: {{task}}, Input: test input value');
+      expect(result.last.content, 'Task: , Input: test input value');
+    });
+
+    test('buildPrompt should replace spaced {{ task }} placeholder (remote template variant)', () {
+      // Arrange — remote prompts.json may use {{ task }} with spaces
+      final messages = [
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'Task: {{ task }}, Input: {{ input }}')
+      ];
+      final prompt = Prompt(name: 'test-prompt', messages: messages);
+
+      // Act
+      final result = prompt.buildPrompt('email body', task: 'write a follow-up');
+
+      // Assert
+      expect(result.last.content, 'Task: write a follow-up, Input: email body');
+    });
+
+    test('buildPrompt should replace spaced {{ task }} with empty string when task is null', () {
+      // Arrange
+      final messages = [
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'Task: {{ task }}, Input: {{ input }}')
+      ];
+      final prompt = Prompt(name: 'test-prompt', messages: messages);
+
+      // Act
+      final result = prompt.buildPrompt('email body');
+
+      // Assert
+      expect(result.last.content, 'Task: , Input: email body');
+    });
+
+    test('buildPrompt should handle mixed spacing in placeholders', () {
+      // Arrange — one with spaces, one without
+      final messages = [
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: '{{ task }} / {{input}}')
+      ];
+      final prompt = Prompt(name: 'test-prompt', messages: messages);
+
+      // Act
+      final result = prompt.buildPrompt('body text', task: 'my task');
+
+      // Assert
+      expect(result.last.content, 'my task / body text');
     });
 
     test('buildPrompt should handle messages without placeholders', () {

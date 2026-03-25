@@ -21,6 +21,9 @@ factory PromptData.fromJson(Map<String, dynamic> json) {
 }
 
 class Prompt {
+  static final _inputPlaceholder = RegExp(r'\{\{\s*input\s*\}\}');
+  static final _taskPlaceholder = RegExp(r'\{\{\s*task\s*\}\}');
+
   final String name;
   final List<AIMessage> messages;
 
@@ -60,8 +63,8 @@ class Prompt {
   }
 
   String _replacePlaceholders(String content, String inputText, String? task) {
-    var result = content.replaceAll(RegExp(r'\{\{\s*input\s*\}\}'), inputText);
-    result = result.replaceAll(RegExp(r'\{\{\s*task\s*\}\}'), task ?? '');
+    var result = content.replaceAll(_inputPlaceholder, inputText);
+    result = result.replaceAll(_taskPlaceholder, task ?? '');
     return result;
   }
 }
