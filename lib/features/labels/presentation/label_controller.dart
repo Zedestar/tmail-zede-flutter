@@ -148,6 +148,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
 
     await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
+        key: const Key('create_new_label_modal'),
         labels: labels,
         onLabelActionCallback: (label) => _createNewLabel(accountId, label),
       ),

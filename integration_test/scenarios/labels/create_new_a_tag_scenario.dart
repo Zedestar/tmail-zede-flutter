@@ -21,8 +21,9 @@ class CreateNewATagScenario extends BaseTestScenario {
     await $.pumpAndTrySettle();
     await _expectCreateNewLabelModalVisible();
 
-    const newLabelName = 'Create new tag 1';
-    const newLabelDescription = 'Description tag 1';
+    final uniqueSuffix = DateTime.now().microsecondsSinceEpoch;
+    final newLabelName = 'Create new tag $uniqueSuffix';
+    final newLabelDescription = 'Description tag $uniqueSuffix';
     await createLabelModalRobot.enterNewLabelName(newLabelName);
     await createLabelModalRobot.enterNewLabelDescription(newLabelDescription);
     await createLabelModalRobot.tapPositiveActionButton(LabelActionType.create);

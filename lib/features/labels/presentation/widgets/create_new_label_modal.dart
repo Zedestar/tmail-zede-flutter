@@ -363,6 +363,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
 
   void _clearInputFocus() {
     _nameInputFocusNode.unfocus();
+    _descriptionInputFocusNode.unfocus();
   }
 
   void _onCreateNewLabel() {
@@ -373,7 +374,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       color: _selectedColor != null
           ? HexColor(_selectedColor!.toHexTriplet())
           : null,
-      description: _descriptionInputController.text,
+      description: _descriptionInputController.text.trim().isEmpty
+          ? null
+          : _descriptionInputController.text.trim(),
     );
     widget.onLabelActionCallback(newLabel);
 
