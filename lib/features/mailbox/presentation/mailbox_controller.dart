@@ -284,7 +284,7 @@ class MailboxController extends BaseMailboxController
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
-          mailboxDashBoardController.getSpamReportBanner();
+          mailboxDashBoardController.refreshSpamReportBanner();
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }

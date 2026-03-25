@@ -28,7 +28,7 @@ class HiveSpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<DateTime> getLastTimeDismissedSpamReported() {
+  Future<int> getLastTimeDismissedSpamReportedMilliseconds() {
     throw UnimplementedError();
   }
 
