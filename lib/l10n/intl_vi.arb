@@ -5739,5 +5739,76 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "pleaseEnterNameYourNewLabel": "Vui lòng nhập tên nhãn mới của bạn",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Chọn màu nhãn",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "Một nhãn với tên này đã tồn tại. Vui lòng chọn tên khác.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Chọn màu tùy chỉnh",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewLabelFailure": "Tạo nhãn mới thất bại",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Hiển thị các nhãn được gán cho email trực tiếp trong danh sách tin nhắn để phân loại dễ dàng hơn.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Hiển thị nhãn",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Cập nhật tên nhãn",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "Bạn có chắc chắn muốn xóa nhãn \"{labelName}\" không?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "labelDescription": "Mô tả (tùy chọn)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Thêm mô tả ngắn để giải thích nhãn này dùng để làm gì",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
+
 }
