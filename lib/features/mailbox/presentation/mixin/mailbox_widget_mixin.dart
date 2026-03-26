@@ -100,6 +100,8 @@ mixin MailboxWidgetMixin {
           MailboxActions.enableMailbox,
       if (mailbox.isTrash && mailbox.myRights?.mayRemoveItems == true)
         MailboxActions.emptyTrash,
+      if (mailbox.myRights?.mayDelete == true)
+        MailboxActions.delete,
     ];
   }
 
