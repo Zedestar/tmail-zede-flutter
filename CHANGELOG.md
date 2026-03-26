@@ -1,3 +1,7 @@
+## [0.26.8] - 2026-03-26
+### Added
+- Translation for en, fr, ru, vi
+
 ## [0.26.6] - 2026-03-24
 ### Fixed
 - Download unknown name attachment
