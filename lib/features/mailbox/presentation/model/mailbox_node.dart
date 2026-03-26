@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -6,6 +7,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 
 class MailboxNode with EquatableMixin {
   static final PresentationMailbox _root = PresentationMailbox(MailboxId(Id('root')));
@@ -172,4 +174,7 @@ extension MailboxNodeExtension on MailboxNode {
 
     return item.sortOrder!.value.value.compareTo(other.item.sortOrder!.value.value);
   }
+
+  MailboxNode? findNodeOnFirstLevel(NodeQuery nodeQuery) =>
+      childrenItems?.firstWhereOrNull(nodeQuery);
 }

@@ -27,3 +27,17 @@ class CannotMoveAllEmailException extends AppBaseException {
   @override
   String get exceptionName => 'CannotMoveAllEmailException';
 }
+
+class NotFoundMailboxOfEmailException extends AppBaseException {
+  NotFoundMailboxOfEmailException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundMailboxOfEmailException';
+}
+
+class NotFoundTrashMailboxException extends AppBaseException {
+  NotFoundTrashMailboxException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundTrashMailboxException';
+}

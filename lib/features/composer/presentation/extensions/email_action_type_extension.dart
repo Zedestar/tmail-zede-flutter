@@ -72,7 +72,9 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.moveToMailbox:
         return AppLocalizations.of(context).movedToFolder(destinationPath ?? '');
       case EmailActionType.moveToTrash:
-        return AppLocalizations.of(context).moved_to_trash;
+        return destinationPath?.trim().isNotEmpty == true
+            ? AppLocalizations.of(context).movedToFolder(destinationPath!)
+            : AppLocalizations.of(context).moved_to_trash;
       case EmailActionType.moveToSpam:
         return AppLocalizations.of(context).marked_as_spam;
       case EmailActionType.unSpam:
