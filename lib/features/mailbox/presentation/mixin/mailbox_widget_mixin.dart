@@ -87,6 +87,8 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
+      if (mailbox.myRights?.mayCreateChild == true)
+        MailboxActions.newSubfolder,
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTeamMailboxes)
