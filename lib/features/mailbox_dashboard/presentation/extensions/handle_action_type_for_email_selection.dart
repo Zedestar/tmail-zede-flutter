@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_trash_mailbox_id_and_path_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -29,7 +30,15 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
     } else if (actionType == EmailActionType.moveToSpam) {
       destinationMailboxId = spamMailboxId;
     } else if (actionType == EmailActionType.moveToTrash) {
-      destinationMailboxId = getMailboxIdByRole(PresentationMailbox.roleTrash);
+      if (selectedMailbox.value?.isChildOfTeamMailboxes == true) {
+        final (:trashId, :trashPath) =
+            getTrashMailboxIdAndPath(selectedMailbox.value!);
+        destinationMailboxId = trashId;
+        destinationFolderPath = trashPath;
+      } else {
+        destinationMailboxId =
+            getMailboxIdByRole(PresentationMailbox.roleTrash);
+      }
     } else if (actionType == EmailActionType.archiveMessage) {
       destinationMailboxId = getMailboxIdByRole(PresentationMailbox.roleArchive);
     }
