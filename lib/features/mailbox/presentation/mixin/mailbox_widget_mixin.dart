@@ -91,6 +91,8 @@ mixin MailboxWidgetMixin {
         MailboxActions.newSubfolder,
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
+      if (mailbox.myRights?.mayRename == true)
+        MailboxActions.rename,
       if (mailbox.isTeamMailboxes)
         if (mailbox.isSubscribedMailbox)
           MailboxActions.disableMailbox
