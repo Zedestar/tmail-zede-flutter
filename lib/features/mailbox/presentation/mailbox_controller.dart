@@ -1600,8 +1600,7 @@ class MailboxController extends BaseMailboxController
     log('MailboxController::emptyMailboxAction:presentationMailbox: ${presentationMailbox.name}');
     if (presentationMailbox.isTrash) {
       mailboxDashBoardController.emptyTrashFolderAction(
-        trashFolderId: presentationMailbox.id,
-        totalEmails: presentationMailbox.countTotalEmails
+        trashMailbox: presentationMailbox,
       );
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(
