@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
@@ -68,26 +67,34 @@ mixin EmailActionController {
     PresentationMailbox? mailboxContain,
   }) {
     if (mailboxContain == null) {
-      _emitMoveToTrashFailure(NotFoundMailboxOfEmailException());
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundMailboxOfEmailException(),
+      );
       return;
     }
 
     final session = mailboxDashBoardController.sessionCurrent;
     if (session == null) {
-      _emitMoveToTrashFailure(NotFoundSessionException());
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundSessionException(),
+      );
       return;
     }
 
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId == null) {
-      _emitMoveToTrashFailure(NotFoundAccountIdException());
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundAccountIdException(),
+      );
       return;
     }
 
     final (:trashId, :trashPath) =
         mailboxDashBoardController.getTrashMailboxIdAndPath(mailboxContain);
     if (trashId == null) {
-      _emitMoveToTrashFailure(NotFoundTrashMailboxException());
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundTrashMailboxException(),
+      );
       return;
     }
 
@@ -102,16 +109,6 @@ mixin EmailActionController {
         destinationPath: trashPath,
       ),
       email.id != null ? {email.id!: email.hasRead} : {},
-    );
-  }
-
-  void _emitMoveToTrashFailure(Exception exception) {
-    mailboxDashBoardController.emitFailure(
-      controller: mailboxDashBoardController,
-      failure: MoveToMailboxFailure(
-        EmailActionType.moveToTrash,
-        exception: exception,
-      ),
     );
   }
 

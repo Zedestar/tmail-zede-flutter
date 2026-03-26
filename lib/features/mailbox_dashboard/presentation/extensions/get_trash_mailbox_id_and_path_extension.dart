@@ -1,6 +1,8 @@
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 extension GetTrashMailboxIdAndPathExtension on MailboxDashBoardController {
@@ -29,5 +31,15 @@ extension GetTrashMailboxIdAndPathExtension on MailboxDashBoardController {
       mailboxId: trashId,
     );
     return (trashId: trashId, trashPath: trashPath);
+  }
+
+  void emitMoveToTrashFailure(Exception exception) {
+    emitFailure(
+      controller: this,
+      failure: MoveToMailboxFailure(
+        EmailActionType.moveToTrash,
+        exception: exception,
+      ),
+    );
   }
 }

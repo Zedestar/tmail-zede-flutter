@@ -160,30 +160,20 @@ class EmailActionReactor {
   ({
     MoveToMailboxRequest moveRequest,
     Map<EmailId, bool> emailIdsWithReadStatus
-  })? moveToTrash(
+  }) buildMoveToTrashRequest(
     PresentationEmail presentationEmail, {
-    required Map<MailboxId, PresentationMailbox> mapMailbox,
-    required PresentationMailbox? selectedMailbox,
-    required bool isSearchEmailRunning,
-    required Map<Role, MailboxId> mapDefaultMailboxIdByRole,
+    required MailboxId trashMailboxId,
+    required PresentationMailbox currentMailbox,
+    String? trashMailboxPath,
   }) {
-    final trashMailboxId = mapDefaultMailboxIdByRole[
-      PresentationMailbox.roleTrash
-    ];
-    final currentMailbox = _getMailboxContain(
-      presentationEmail,
-      mapMailbox: mapMailbox,
-      isSearchEmailRunning: isSearchEmailRunning,
-      selectedMailbox: selectedMailbox,
-    );
-    if (trashMailboxId == null || currentMailbox == null) return null;
-
     return (
       moveRequest: MoveToMailboxRequest(
         {currentMailbox.id: [presentationEmail.id!]},
         trashMailboxId,
         MoveAction.moving,
-        EmailActionType.moveToTrash),
+        EmailActionType.moveToTrash,
+        destinationPath: trashMailboxPath,
+      ),
       emailIdsWithReadStatus: {presentationEmail.id!: presentationEmail.hasRead},
     );
   }
