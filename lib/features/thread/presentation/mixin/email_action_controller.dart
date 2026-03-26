@@ -20,9 +20,13 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_trash_mailbox_id_and_path_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -59,23 +63,56 @@ mixin EmailActionController {
     mailboxDashBoardController.openEmailDetailedView(presentationEmail);
   }
 
-  void moveToTrash(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
-
-    if (session != null && mailboxContain != null && accountId != null && trashMailboxId != null) {
-      _moveToTrashAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {mailboxContain.id: email.id != null ? [email.id!] : []},
-          trashMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        email.id != null ? {email.id! : email.hasRead} : {},
-      );
+  void moveToTrash(
+    PresentationEmail email, {
+    PresentationMailbox? mailboxContain,
+  }) {
+    if (mailboxContain == null) {
+      _emitMoveToTrashFailure(NotFoundMailboxOfEmailException());
+      return;
     }
+
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (session == null) {
+      _emitMoveToTrashFailure(NotFoundSessionException());
+      return;
+    }
+
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId == null) {
+      _emitMoveToTrashFailure(NotFoundAccountIdException());
+      return;
+    }
+
+    final (:trashId, :trashPath) =
+        mailboxDashBoardController.getTrashMailboxIdAndPath(mailboxContain);
+    if (trashId == null) {
+      _emitMoveToTrashFailure(NotFoundTrashMailboxException());
+      return;
+    }
+
+    _moveToTrashAction(
+      session,
+      accountId,
+      MoveToMailboxRequest(
+        {mailboxContain.id: email.id != null ? [email.id!] : []},
+        trashId,
+        MoveAction.moving,
+        EmailActionType.moveToTrash,
+        destinationPath: trashPath,
+      ),
+      email.id != null ? {email.id!: email.hasRead} : {},
+    );
+  }
+
+  void _emitMoveToTrashFailure(Exception exception) {
+    mailboxDashBoardController.emitFailure(
+      controller: mailboxDashBoardController,
+      failure: MoveToMailboxFailure(
+        EmailActionType.moveToTrash,
+        exception: exception,
+      ),
+    );
   }
 
   void _moveToTrashAction(
