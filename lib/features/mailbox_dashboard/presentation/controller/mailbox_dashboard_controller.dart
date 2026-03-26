@@ -1832,41 +1832,40 @@ class MailboxDashBoardController extends ReloadableController
 
   void emptyTrashFolderAction({
     Function? onCancelSelectionEmail,
-    MailboxId? trashFolderId,
-    int totalEmails = 0,
+    PresentationMailbox? trashMailbox,
   }) {
     onCancelSelectionEmail?.call();
 
-    final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
+    final trashFolder = trashMailbox
+        ?? (selectedMailbox.value?.isTrash == true ? selectedMailbox.value : null)
+        ?? mapMailboxById[mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash]];
     final accountId = this.accountId.value;
+    final session = sessionCurrent;
 
-    if (accountId == null || sessionCurrent == null) {
+    if (accountId == null || session == null) {
       consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundSessionException()))));
       return;
     }
 
-    if (trashMailboxId == null) {
+    if (trashFolder == null) {
       consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundMailboxException()))));
       return;
     }
 
-    if (CapabilityIdentifier.jmapMailboxClear.isSupported(sessionCurrent!, accountId)) {
+    if (CapabilityIdentifier.jmapMailboxClear.isSupported(session, accountId) &&
+        trashFolder.isTrashTeamMailbox != true) {
       clearMailbox(
-        sessionCurrent!,
+        session,
         accountId,
-        trashMailboxId,
+        trashFolder.id,
         PresentationMailbox.roleTrash,
       );
     } else {
-      final totalEmailsInTrash = totalEmails == 0
-          ? mapMailboxById[trashMailboxId]?.countTotalEmails ?? 0
-          : totalEmails;
-
       consumeState(_emptyTrashFolderInteractor.execute(
-        sessionCurrent!,
+        session,
         accountId,
-        trashMailboxId,
-        totalEmailsInTrash,
+        trashFolder.id,
+        trashFolder.countTotalEmails,
         progressStateController,
       ));
     }
@@ -2397,6 +2396,7 @@ class MailboxDashBoardController extends ReloadableController
   ) {
     return mailbox != null &&
       mailbox.isTrash &&
+      mailbox.myRights?.mayRemoveItems == true &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
@@ -2408,6 +2408,7 @@ class MailboxDashBoardController extends ReloadableController
   ) {
     return mailbox != null &&
       mailbox.isTrash &&
+      mailbox.myRights?.mayRemoveItems == true &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);

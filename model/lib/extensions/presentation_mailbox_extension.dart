@@ -44,10 +44,13 @@ extension PresentationMailboxExtension on PresentationMailbox {
     if (isPersonal) {
       return role == PresentationMailbox.roleTrash;
     } else {
-      return isChildOfTeamMailboxes &&
-          name?.name.toLowerCase() ==
-              PresentationMailbox.trashRole.toLowerCase();
+      return isTrashTeamMailbox;
     }
+  }
+
+  bool get isTrashTeamMailbox {
+    return isChildOfTeamMailboxes &&
+        name?.name.toLowerCase() == PresentationMailbox.trashRole.toLowerCase();
   }
 
   bool get isDrafts => role == PresentationMailbox.roleDrafts;
