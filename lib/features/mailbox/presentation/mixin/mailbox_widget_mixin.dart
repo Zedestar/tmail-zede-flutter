@@ -97,7 +97,9 @@ mixin MailboxWidgetMixin {
         if (mailbox.isSubscribedMailbox)
           MailboxActions.disableMailbox
         else
-          MailboxActions.enableMailbox
+          MailboxActions.enableMailbox,
+      if (mailbox.myRights?.mayDelete == true)
+        MailboxActions.delete,
     ];
   }
 
