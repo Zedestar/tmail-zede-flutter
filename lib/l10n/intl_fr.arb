@@ -5733,5 +5733,76 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "pleaseEnterNameYourNewLabel": "Veuillez saisir le nom de votre nouveau libellé",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Choisir une couleur de libellé",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "Un libellé avec ce nom existe déjà. Veuillez choisir un nom différent.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Choisir une couleur personnalisée",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewLabelFailure": "Échec de la création du libellé",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Afficher les libellés assignés aux e-mails directement dans votre liste de messages pour une catégorisation plus facile.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Afficher les libellés",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Mettre à jour le nom du libellé",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "Êtes-vous sûr de vouloir supprimer le libellé \"{labelName}\" ?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "labelDescription": "Description (optionnelle)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Ajoutez une courte description pour expliquer à quoi sert ce libellé",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
+
 }

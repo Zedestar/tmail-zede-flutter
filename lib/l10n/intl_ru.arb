@@ -5751,5 +5751,76 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "pleaseEnterNameYourNewLabel": "Пожалуйста, введите название нового ярлыка",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Выберите цвет ярлыка",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "Ярлык с таким названием уже существует. Пожалуйста, выберите другое название.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Выбрать произвольный цвет",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewLabelFailure": "Ошибка создания нового ярлыка",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Показывать ярлыки, назначенные письмам, непосредственно в списке сообщений для удобной категоризации.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Показывать ярлыки",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Обновить название ярлыка",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "Вы уверены, что хотите удалить ярлык \"{labelName}\"?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "labelDescription": "Описание (необязательно)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Добавьте краткое описание, объясняющее назначение этого ярлыка",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
+
 }
