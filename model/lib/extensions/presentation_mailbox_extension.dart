@@ -40,7 +40,15 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isVirtualFolder => isFavorite || isActionRequired;
 
-  bool get isTrash => role == PresentationMailbox.roleTrash;
+  bool get isTrash {
+    if (isPersonal) {
+      return role == PresentationMailbox.roleTrash;
+    } else {
+      return isChildOfTeamMailboxes &&
+          name?.name.toLowerCase() ==
+              PresentationMailbox.trashRole.toLowerCase();
+    }
+  }
 
   bool get isDrafts => role == PresentationMailbox.roleDrafts;
 
