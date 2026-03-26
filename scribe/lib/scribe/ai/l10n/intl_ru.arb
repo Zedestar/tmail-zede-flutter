@@ -90,7 +90,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "customPromptAction": "Помогите мне написать",
+  "customPromptAction": "Помоги мне написать",
   "@customPromptAction": {
     "type": "text",
     "placeholders_order": [],
