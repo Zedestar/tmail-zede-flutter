@@ -5791,18 +5791,5 @@
     "placeholders": {
       "labelName": {}
     }
-  },
-  "labelDescription": "Description (optionnelle)",
-  "@labelDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "labelDescriptionHintText": "Ajoutez une courte description pour expliquer à quoi sert ce libellé",
-  "@labelDescriptionHintText": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   }
-
 }

@@ -5809,18 +5809,5 @@
     "placeholders": {
       "labelName": {}
     }
-  },
-  "labelDescription": "Описание (необязательно)",
-  "@labelDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "labelDescriptionHintText": "Добавьте краткое описание, объясняющее назначение этого ярлыка",
-  "@labelDescriptionHintText": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   }
-
 }

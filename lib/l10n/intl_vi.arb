@@ -5797,18 +5797,5 @@
     "placeholders": {
       "labelName": {}
     }
-  },
-  "labelDescription": "Mô tả (tùy chọn)",
-  "@labelDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "labelDescriptionHintText": "Thêm mô tả ngắn để giải thích nhãn này dùng để làm gì",
-  "@labelDescriptionHintText": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   }
-
 }
