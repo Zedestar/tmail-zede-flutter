@@ -44,7 +44,19 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isDrafts => role == PresentationMailbox.roleDrafts;
 
-  bool get isTemplates => role == PresentationMailbox.roleTemplates;
+  bool get isTemplates {
+    if (isPersonal) {
+      return role == PresentationMailbox.roleTemplates;
+    } else {
+      return isTemplatesTeamMailbox;
+    }
+  }
+
+  bool get isTemplatesTeamMailbox {
+    return isChildOfTeamMailboxes &&
+        name?.name.toLowerCase() ==
+            PresentationMailbox.templatesRole.toLowerCase();
+  }
 
   bool get isSent => role == PresentationMailbox.roleSent;
 
