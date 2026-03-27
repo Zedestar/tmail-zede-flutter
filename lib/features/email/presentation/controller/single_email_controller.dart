@@ -344,8 +344,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
       } else if (action is RemoveLabelFromEmailAction) {
         mailboxDashBoardController.clearEmailUIAction();
-        if (_currentEmailId == null ||
-            action.emailId != _currentEmailId) {
+        final displayedEmailId = _currentEmailId ?? currentEmail?.id;
+        if (displayedEmailId == null || action.emailId != displayedEmailId) {
           return;
         }
         mailboxDashBoardController.toggleLabelToEmail(
@@ -355,8 +355,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
       } else if (action is SyncUpdateLabelForEmailOnMemory) {
         mailboxDashBoardController.clearEmailUIAction();
-        if (_currentEmailId == null ||
-            action.emailId != _currentEmailId) {
+        final displayedEmailId = _currentEmailId ?? currentEmail?.id;
+        if (displayedEmailId == null || action.emailId != displayedEmailId) {
           return;
         }
 
