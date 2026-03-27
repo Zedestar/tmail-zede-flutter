@@ -46,6 +46,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
+      bool? collapseThreads,
     }
   ) {
     return Future.sync(() async {
@@ -56,7 +57,9 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         position: position,
         sort: sort,
         filter: filter,
-        properties: properties);
+        properties: properties,
+        collapseThreads: collapseThreads,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

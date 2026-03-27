@@ -4,6 +4,8 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/thread/thread.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/extensions/list_thread_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/thread_email.dart';
 
 class EmailsResponse with EquatableMixin {
   final List<Email>? emailList;
@@ -25,6 +27,20 @@ class EmailsResponse with EquatableMixin {
   bool hasState() => state != null;
 
   bool get existNotFoundEmails => notFoundEmailIds?.isNotEmpty == true;
+
+  List<ThreadEmail> get threadEmails {
+    final emails = emailList;
+    if (emails == null || emails.isEmpty) return [];
+
+    final threadMap = threadLists.toThreadEmailIdsMap();
+
+    return emails.map((email) {
+      return ThreadEmail.fromEmail(
+        email,
+        emailIdsInThread: threadMap[email.threadId],
+      );
+    }).toList();
+  }
 
   @override
   List<Object?> get props => [

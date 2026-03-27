@@ -51,6 +51,7 @@ abstract class ThreadRepository {
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
     Properties? propertiesCreated,
+    bool? collapseThreads,
   });
 
   Stream<EmailsResponse> refreshChanges(

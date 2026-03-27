@@ -47,7 +47,8 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
-      Properties? properties
+      Properties? properties,
+      bool? collapseThreads,
     }
   ) async {
     return await fetchAllEmail(
@@ -59,6 +60,7 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       sort: sort,
       filter: filter,
       properties: properties,
+      collapseThreads: collapseThreads,
     );
   }
 

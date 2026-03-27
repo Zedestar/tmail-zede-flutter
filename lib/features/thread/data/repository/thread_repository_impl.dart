@@ -166,6 +166,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
     Properties? propertiesCreated,
+    bool? collapseThreads,
   }) async* {
     jmap.State? cachedState;
 
@@ -197,14 +198,20 @@ class ThreadRepositoryImpl extends ThreadRepository {
       sort: sort,
       filter: emailFilter?.filter,
       properties: propertiesCreated,
+      collapseThreads: collapseThreads,
     );
 
-    final serverCount = serverResponse.emailList?.length ?? 0;
+    final emailListLoaded = collapseThreads == true
+        ? serverResponse.threadEmails
+        : serverResponse.emailList;
+
+    final serverCount = emailListLoaded?.length ?? 0;
     final notFoundEmailIds = serverResponse.notFoundEmailIds ?? [];
     final stateResponse = cachedState ?? serverResponse.state;
 
     logTrace(
       'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'collapseThreads = $collapseThreads, '
       'ServerEmailCount = $serverCount, '
       'ServerNotFoundEmailIds = ${notFoundEmailIds.length}, '
       'StateResponse = ${stateResponse?.value}',
@@ -214,14 +221,14 @@ class ThreadRepositoryImpl extends ThreadRepository {
       await _updateEmailCache(
         accountId,
         session.username,
-        newCreated: serverResponse.emailList,
-        newDestroyed: serverResponse.notFoundEmailIds,
+        newCreated: emailListLoaded,
+        newDestroyed: notFoundEmailIds,
       );
     }
 
     // Combine server list + keep existing state
     yield EmailsResponse(
-      emailList: serverResponse.emailList,
+      emailList: emailListLoaded,
       state: stateResponse,
     );
   }

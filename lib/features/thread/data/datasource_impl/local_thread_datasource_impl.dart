@@ -44,7 +44,8 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
-      Properties? properties
+      Properties? properties,
+      bool? collapseThreads,
     }
   ) {
     throw UnimplementedError();

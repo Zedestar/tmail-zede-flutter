@@ -30,6 +30,7 @@ class GetEmailsInMailboxInteractor {
       bool getLatestChanges = true,
       bool useCache = true,
       bool forceEmailQuery = false,
+      bool? collapseThreads,
     }
   ) async* {
     try {
@@ -45,6 +46,7 @@ class GetEmailsInMailboxInteractor {
           sort: sort,
           emailFilter: emailFilter,
           propertiesCreated: propertiesCreated,
+          collapseThreads: collapseThreads,
         );
       } else if (useCache) {
         sourceStream = threadRepository.getAllEmail(
