@@ -49,14 +49,22 @@ extension HandleLogicLabelExtension on MailboxDashBoardController  {
     _refreshLabelSettingEnabled();
 
     if (isEmailOpened) {
-      dispatchEmailUIAction(
-        SyncUpdateLabelForEmailOnMemory(
-          emailId: emailId,
-          labelKeyword: labelKeyword,
-          shouldRemove: shouldRemove,
-        ),
-      );
+      _syncLabelForOpenedEmail(emailId, labelKeyword, shouldRemove);
     }
+  }
+
+  void _syncLabelForOpenedEmail(
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+    bool shouldRemove,
+  ) {
+    dispatchEmailUIAction(
+      SyncUpdateLabelForEmailOnMemory(
+        emailId: emailId,
+        labelKeyword: labelKeyword,
+        shouldRemove: shouldRemove,
+      ),
+    );
   }
 
   void _syncLabelForEmailList(
