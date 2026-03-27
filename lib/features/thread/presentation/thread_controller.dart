@@ -358,6 +358,11 @@ class ThreadController extends BaseController with EmailActionController {
       } else if (action is RefreshAllEmailAction) {
         refreshAllEmail(shouldClearCache: PlatformInfo.isWeb);
         mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is RefreshEmailListViewOnForceEmailQueryAction) {
+        consumeState(Stream.value(Right(GetAllEmailLoading())));
+        resetToOriginalValue();
+        getAllEmailAction(forceEmailQuery: forceEmailQuery);
+        mailboxDashBoardController.clearEmailUIAction();
       }
     });
 
@@ -537,7 +542,7 @@ class ThreadController extends BaseController with EmailActionController {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearAllEmailAndStateCache();
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -707,7 +712,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     }
   }
 

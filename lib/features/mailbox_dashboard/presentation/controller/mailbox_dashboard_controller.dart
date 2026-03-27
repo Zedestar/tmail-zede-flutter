@@ -949,7 +949,6 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     loadLinagoraEcosystem();
-    loadPreferencesSetting();
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
@@ -2127,6 +2126,7 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent != null) {
       labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
     }
+    loadPreferencesSetting();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -3463,7 +3463,16 @@ class MailboxDashBoardController extends ReloadableController
   @override
   OnPreferencesSettingChanged get onPreferencesSettingChanged => ({bool isThreadStateChanged = false}) {
     log('MailboxDashBoardController::onPreferencesSettingChanged: isThreadStateChanged = $isThreadStateChanged');
-  };
+        if (isThreadStateChanged &&
+            forceEmailQuery &&
+            !searchController.isSearchEmailRunning) {
+          _syncEmailListViewOnForceEmailQuery();
+        }
+      };
+
+  void _syncEmailListViewOnForceEmailQuery() {
+    dispatchEmailUIAction(RefreshEmailListViewOnForceEmailQueryAction());
+  }
 
   @override
   void onClose() {

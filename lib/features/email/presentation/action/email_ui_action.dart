@@ -147,3 +147,5 @@ class SyncUpdateLabelForEmailOnMemory extends EmailUIAction {
         shouldRemove,
       ];
 }
+
+class RefreshEmailListViewOnForceEmailQueryAction extends EmailUIAction {}

@@ -1,10 +1,12 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnPreferencesSettingChanged = void Function({
   bool isThreadStateChanged,
@@ -21,6 +23,9 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
 
   bool? get isThreadDetailEnabled =>
       _preferencesSetting?.isThreadDetailEnabled == true;
+
+  bool get forceEmailQuery =>
+      PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled;
 
   void _setPreferencesSetting(PreferencesSetting setting) =>
       _preferencesSetting = setting;
