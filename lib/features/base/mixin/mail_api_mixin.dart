@@ -12,6 +12,8 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
+import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
+import 'package:jmap_dart_client/jmap/core/response/response_object.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -27,6 +29,9 @@ import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/thread/get/get_thread_method.dart';
+import 'package:jmap_dart_client/jmap/thread/get/get_thread_response.dart';
+import 'package:jmap_dart_client/jmap/thread/thread.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
@@ -36,8 +41,11 @@ import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/get_email_method_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/query_email_method_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/reference_path_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
@@ -110,6 +118,7 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
     Set<Comparator>? sort,
     Filter? filter,
     Properties? properties,
+    bool? collapseThreads,
   }) async {
     final processingInvocation = ProcessingInvocation();
 
@@ -118,31 +127,46 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
       processingInvocation,
     );
 
-    final queryEmailMethod = QueryEmailMethod(accountId);
-
-    if (limit != null) queryEmailMethod.addLimit(limit);
-
-    if (position != null && position > 0) queryEmailMethod.addPosition(position);
-
-    if (sort != null) queryEmailMethod.addSorts(sort);
-
-    if (filter != null) queryEmailMethod.addFilters(filter);
+    final queryEmailMethod = QueryEmailMethod(accountId)
+      ..addLimitIfNotNull(limit)
+      ..addPositionIfValid(position)
+      ..addSortsIfNotNull(sort)
+      ..addFiltersIfNotNull(filter)
+      ..addCollapseThreadsIfValid(collapseThreads);
 
     final queryEmailInvocation =
         jmapRequestBuilder.invocation(queryEmailMethod);
 
-    final getEmailMethod = GetEmailMethod(accountId);
+    if (collapseThreads == true) {
+      properties ??= Properties({EmailProperty.threadId});
+      properties.value.add(EmailProperty.threadId);
+    }
 
-    if (properties != null) getEmailMethod.addProperties(properties);
-
-    getEmailMethod.addReferenceIds(
-      processingInvocation.createResultReference(
-        queryEmailInvocation.methodCallId,
-        ReferencePath.idsPath,
-      ),
-    );
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addPropertiesIfNotNull(properties)
+      ..addReferenceIds(
+        processingInvocation.createResultReference(
+          queryEmailInvocation.methodCallId,
+          ReferencePath.idsPath,
+        ),
+      );
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+    MethodCallId? getThreadMethodCallId;
+
+    if (collapseThreads == true) {
+      final getThread = GetThreadMethod(accountId)
+        ..addReferenceIds(
+          processingInvocation.createResultReference(
+            getEmailInvocation.methodCallId,
+            ReferencePathExtension.listThreadIdsPath,
+          ),
+        );
+
+      getThreadMethodCallId =
+          jmapRequestBuilder.invocation(getThread).methodCallId;
+    }
 
     final capabilities = getEmailMethod.requiredCapabilities
         .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -167,12 +191,41 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
 
     final notFoundEmailIds =
         responseOfGetEmailMethod?.notFound?.toEmailIds().toList();
-    log('$runtimeType::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()} | NewState = ${responseOfGetEmailMethod?.state.value}');
+    log(
+      '$runtimeType::fetchAllEmail: '
+      'notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()}, '
+      'NewState = ${responseOfGetEmailMethod?.state.value}',
+    );
+
+    final threadLists = getThreadMethodCallId != null
+        ? _parseThreadListFromResponse(
+            response: result,
+            methodCallId: getThreadMethodCallId,
+          )
+        : null;
+    log('$runtimeType::fetchAllEmail: LengthThreadLists = ${threadLists?.length}');
+
     return EmailsResponse(
       emailList: emailList,
       notFoundEmailIds: notFoundEmailIds,
       state: responseOfGetEmailMethod?.state,
+      threadLists: threadLists,
     );
+  }
+
+  List<Thread>? _parseThreadListFromResponse({
+    required ResponseObject response,
+    required MethodCallId methodCallId,
+  }) {
+    try {
+      return response.parse<GetThreadResponse>(
+        methodCallId,
+        GetThreadResponse.deserialize,
+      )?.list;
+    } catch (e) {
+      logWarning('$runtimeType::_parseThreadListFromResponse: Exception = $e');
+      return null;
+    }
   }
 
   List<Email>? sortEmails({
