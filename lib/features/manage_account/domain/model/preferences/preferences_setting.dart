@@ -31,7 +31,7 @@ class PreferencesSetting with EquatableMixin {
     }
   }
 
-  bool get isThreadDetailEnabled => threadConfig.isEnabled == true;
+  bool get isThreadDetailEnabled => threadConfig.isEnabled;
 
   SpamReportConfig get spamReportConfig {
     final spamConfig =

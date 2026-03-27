@@ -225,6 +225,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, ThreadMixin {
     emailInThreadStatus,
     messageId,
     references,
+    emailIdsInThread,
   ];
 
   PresentationEmail copyWith({

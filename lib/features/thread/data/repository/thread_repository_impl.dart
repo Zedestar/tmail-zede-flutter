@@ -260,14 +260,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
         properties: propertiesCreated,
         collapseThreads: collapseThreads,
       );
+      final emailListLoaded = collapseThreads == true
+          ? networkEmailResponse.threadEmails
+          : networkEmailResponse.emailList;
       await _updateEmailCache(
         accountId,
         session.username,
-        newCreated: networkEmailResponse.emailList,
+        newCreated: emailListLoaded,
         newDestroyed: networkEmailResponse.notFoundEmailIds,
       );
 
-      return networkEmailResponse;
+      return networkEmailResponse.copyWith(emailList: emailListLoaded);
   }
 
   @visibleForTesting
@@ -395,7 +398,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    if (!newEmailResponse.hasEmails()
+    if (collapseThreads == true
+        || !newEmailResponse.hasEmails()
         || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       final networkEmailResponse = await _getFirstPage(
         session,

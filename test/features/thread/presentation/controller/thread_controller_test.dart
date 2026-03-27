@@ -338,6 +338,7 @@ void main() {
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
         )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
           emailList: emailList,
           currentEmailState: State('old-state'))))
@@ -508,7 +509,10 @@ void main() {
           emailFilter: anyNamed('emailFilter'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-          getLatestChanges: false,
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
         ));
         
         // assert
@@ -521,6 +525,9 @@ void main() {
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           getLatestChanges: false,
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
         ));
       });
     });

@@ -193,7 +193,7 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
         responseOfGetEmailMethod?.notFound?.toEmailIds().toList();
     log(
       '$runtimeType::fetchAllEmail: '
-      'notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()}, '
+      'notFoundEmailIds = ${(notFoundEmailIds ?? []).asListString.toString()}, '
       'NewState = ${responseOfGetEmailMethod?.state.value}',
     );
 
