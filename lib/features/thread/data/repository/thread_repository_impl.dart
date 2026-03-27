@@ -247,6 +247,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       MailboxId? mailboxId,
       Properties? propertiesCreated,
       Filter? filter,
+      bool? collapseThreads,
     }
   ) async {
       final networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
@@ -257,6 +258,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         sort: sort,
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
         properties: propertiesCreated,
+        collapseThreads: collapseThreads,
       );
       await _updateEmailCache(
         accountId,
@@ -367,6 +369,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool? collapseThreads,
     }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
@@ -402,9 +405,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
         filter: emailFilter?.filter,
         mailboxId: emailFilter?.mailboxId,
         propertiesCreated: propertiesCreated,
+        collapseThreads: collapseThreads,
       );
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
+        'collapseThreads = $collapseThreads, '
         'CountEmailCached = ${newEmailResponse.emailList?.length}, '
         'EmailStateCache = ${newEmailResponse.state?.value}, '
         'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
@@ -417,6 +422,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     } else {
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
+        'collapseThreads = $collapseThreads, '
         'CountEmailCached = ${newEmailResponse.emailList?.length}, '
         'EmailStateCache = ${newEmailResponse.state?.value}, '
         'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
@@ -456,9 +462,13 @@ class ThreadRepositoryImpl extends ThreadRepository {
           position: emailRequest.position,
           sort: emailRequest.sort,
           filter: emailRequest.filter,
-          properties: emailRequest.properties)
+          properties: emailRequest.properties,
+          collapseThreads: emailRequest.collapseThreads,
+        )
         .then((response) {
-          final listEmails = response.emailList;
+          final listEmails = emailRequest.collapseThreads == true
+              ? response.threadEmails
+              : response.emailList;
           if (emailRequest.lastEmailId != null && listEmails?.isNotEmpty == true) {
             listEmails?.removeWhere((email) => email.id == emailRequest.lastEmailId);
           }
@@ -627,6 +637,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
     Properties? propertiesCreated,
+    bool? collapseThreads,
   }) async* {
     final networkDataSource = mapDataSource[DataSourceType.network]!;
     final emailResponse = await networkDataSource.getAllEmail(
@@ -637,6 +648,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       sort: sort,
       filter: emailFilter?.filter,
       properties: propertiesCreated,
+      collapseThreads: collapseThreads,
     );
     yield emailResponse;
   }

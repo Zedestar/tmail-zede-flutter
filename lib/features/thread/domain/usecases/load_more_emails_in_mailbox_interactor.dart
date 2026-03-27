@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/thread_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 
@@ -23,7 +24,15 @@ class LoadMoreEmailsInMailboxInteractor {
 
   Either<Failure, Success> _toGetEmailState(EmailsResponse emailResponse) {
     final presentationEmailList = emailResponse.emailList
-      ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
+      ?.map((email) {
+        if (email is ThreadEmail) {
+          return email.toPresentationEmail(
+            emailIdsInThread: email.emailIdsInThread,
+          );
+        } else {
+          return email.toPresentationEmail();
+        }
+      }).toList() ?? List.empty();
 
     return Right<Failure, Success>(LoadMoreEmailsSuccess(presentationEmailList));
   }

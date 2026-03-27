@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/thread_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -28,6 +29,7 @@ class RefreshChangesEmailsInMailboxInteractor {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       EmailFilter? emailFilter,
+      bool? collapseThreads,
     }
   ) async* {
     yield Right<Failure, Success>(RefreshChangesAllEmailLoading());
@@ -42,7 +44,9 @@ class RefreshChangesEmailsInMailboxInteractor {
           limit: limit,
           propertiesCreated: propertiesCreated,
           propertiesUpdated: propertiesUpdated,
-          emailFilter: emailFilter)
+          emailFilter: emailFilter,
+          collapseThreads: collapseThreads,
+        )
         .map((emailResponse) => _toGetEmailState(
           emailResponse: emailResponse,
           currentMailboxId: emailFilter?.mailboxId
@@ -57,7 +61,15 @@ class RefreshChangesEmailsInMailboxInteractor {
     MailboxId? currentMailboxId
   }) {
     final presentationEmailList = emailResponse.emailList
-      ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
+      ?.map((email) {
+        if (email is ThreadEmail) {
+          return email.toPresentationEmail(
+            emailIdsInThread: email.emailIdsInThread,
+          );
+        } else {
+          return email.toPresentationEmail();
+        }
+      }).toList() ?? List.empty();
 
     return Right<Failure, Success>(RefreshChangesAllEmailSuccess(
       emailList: presentationEmailList,

@@ -359,8 +359,6 @@ class ThreadController extends BaseController with EmailActionController {
         refreshAllEmail(shouldClearCache: PlatformInfo.isWeb);
         mailboxDashBoardController.clearEmailUIAction();
       } else if (action is RefreshEmailListViewOnForceEmailQueryAction) {
-        consumeState(Stream.value(Right(GetAllEmailLoading())));
-        resetToOriginalValue();
         getAllEmailAction(forceEmailQuery: forceEmailQuery);
         mailboxDashBoardController.clearEmailUIAction();
       }
@@ -671,7 +669,11 @@ class ThreadController extends BaseController with EmailActionController {
     bool getLatestChanges = true,
     bool forceEmailQuery = false,
   }) {
-    log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
+    log(
+      'ThreadController::_getAllEmailAction:'
+      'getLatestChanges = $getLatestChanges, '
+      'forceEmailQuery = $forceEmailQuery ',
+    );
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
@@ -687,7 +689,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
-        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
+        collapseThreads: mailboxDashBoardController.collapseThreads,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -823,6 +825,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
+      collapseThreads: mailboxDashBoardController.collapseThreads,
     ).last;
 
     refreshState.fold(
@@ -874,6 +877,7 @@ class ThreadController extends BaseController with EmailActionController {
             _accountId!,
           ),
           useCache: false,
+          collapseThreads: mailboxDashBoardController.collapseThreads,
         )
         .last;
 
@@ -900,9 +904,11 @@ class ThreadController extends BaseController with EmailActionController {
           currentListEmail.isNotEmpty ? currentListEmail.last : null;
       final useCache = selectedMailbox?.isCacheable ?? false;
       final filterOption = mailboxDashBoardController.filterMessageOption.value;
+      final collapseThreads = mailboxDashBoardController.collapseThreads;
 
       logTrace(
         'ThreadController::_loadMoreEmails: '
+        'collapseThreads = $collapseThreads, '
         'OldestEmailID = ${oldestEmail?.id?.asString}, '
         'useCache = $useCache, '
         'filterOption = ${filterOption.name}',
@@ -914,11 +920,12 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
           limit: ThreadConstants.defaultLimit,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-          filterOption: mailboxDashBoardController.filterMessageOption.value,
+          filterOption: filterOption,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
+          collapseThreads: collapseThreads,
         )
       ));
     } else {

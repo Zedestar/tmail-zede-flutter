@@ -68,6 +68,7 @@ class GetEmailsInMailboxInteractor {
           sort: sort,
           emailFilter: emailFilter,
           propertiesCreated: propertiesCreated,
+          collapseThreads: collapseThreads,
         );
       }
 

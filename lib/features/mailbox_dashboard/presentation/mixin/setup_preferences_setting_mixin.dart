@@ -27,6 +27,8 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
   bool get forceEmailQuery =>
       PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled;
 
+  bool get collapseThreads => isThreadDetailEnabled == true && forceEmailQuery;
+
   void _setPreferencesSetting(PreferencesSetting setting) =>
       _preferencesSetting = setting;
 
@@ -49,14 +51,14 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
     final currentPreferencesSetting = _preferencesSetting;
     final newPreferencesSetting = success.preferencesSetting;
 
+    _setPreferencesSetting(newPreferencesSetting);
+
     if (currentPreferencesSetting != null) {
       _verifyThreadSettingStateChanged(
         currentSetting: currentPreferencesSetting,
         newSetting: newPreferencesSetting,
       );
     }
-
-    _setPreferencesSetting(newPreferencesSetting);
   }
 
   void scribeLoadPreferencesSettingFailure(GetLocalSettingsFailure failure) {

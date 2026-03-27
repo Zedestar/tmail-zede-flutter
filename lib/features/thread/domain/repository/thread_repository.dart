@@ -41,6 +41,7 @@ abstract class ThreadRepository {
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
     Properties? propertiesCreated,
+    bool? collapseThreads,
   });
 
   Stream<EmailsResponse> forceQueryAllEmailsForWeb({
@@ -64,6 +65,7 @@ abstract class ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool? collapseThreads,
     }
   );
 
