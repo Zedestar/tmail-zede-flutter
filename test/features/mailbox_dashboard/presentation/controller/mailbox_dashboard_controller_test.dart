@@ -495,9 +495,9 @@ void main() {
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        useCache: anyNamed('useCache'),
-        forceEmailQuery: anyNamed('forceEmailQuery'),
-        collapseThreads: anyNamed('collapseThreads')));
+        useCache: true,
+        forceEmailQuery: false,
+        collapseThreads: false));
     });
 
     test('WHEN user use advanced search/sort/filter feature, '
@@ -555,13 +555,13 @@ void main() {
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        emailFilter: anyNamed('emailFilter'),
+        emailFilter: threadController.getEmailFilterForLoadMailbox(),
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        useCache: anyNamed('useCache'),
-        forceEmailQuery: anyNamed('forceEmailQuery'),
-        collapseThreads: anyNamed('collapseThreads')
+        useCache: true,
+        forceEmailQuery: false,
+        collapseThreads: false
       )).called(1);
     });
 

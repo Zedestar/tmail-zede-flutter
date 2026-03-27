@@ -261,6 +261,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, ThreadMixin {
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
     List<EmailId>? emailIdsInThread,
+    bool clearEmailIdsInThread = false,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -294,6 +295,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, ThreadMixin {
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
       messageId: messageId ?? this.messageId,
       references: references ?? this.references,
-    )..emailIdsInThread = emailIdsInThread ?? this.emailIdsInThread;
+    )..emailIdsInThread =
+        clearEmailIdsInThread ? null : (emailIdsInThread ?? this.emailIdsInThread);
   }
 }

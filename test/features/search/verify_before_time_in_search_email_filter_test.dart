@@ -863,7 +863,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: anyNamed('collapseThreads'),
+        collapseThreads: mailboxDashboardController.collapseThreads,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1031,7 +1031,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: anyNamed('collapseThreads'),
+        collapseThreads: mailboxDashboardController.collapseThreads,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1144,7 +1144,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: anyNamed('collapseThreads'),
+        collapseThreads: mailboxDashboardController.collapseThreads,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
