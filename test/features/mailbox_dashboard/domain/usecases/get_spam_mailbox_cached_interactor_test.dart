@@ -86,6 +86,20 @@ void main() {
     });
 
     group('cooldown active (dismissed less than 24h ago)', () {
+      test('does not show banner when dismissed 13 hours ago', () {
+        when(spamReportRepository
+                .getLastTimeDismissedSpamReportedMilliseconds())
+            .thenAnswer((_) async => msAgo(13));
+
+        expect(
+          interactor.execute(accountId, userName),
+          emitsInOrder([
+            Right(GetSpamMailboxCachedLoading()),
+            leftWithException<SpamDismissCooldownActiveException>(),
+          ]),
+        );
+      });
+
       test('does not show banner when dismissed 1 hour ago', () {
         when(spamReportRepository
                 .getLastTimeDismissedSpamReportedMilliseconds())
@@ -101,7 +115,25 @@ void main() {
       });
     });
 
-    group('cooldown expired (dismissed 24h+ ago)', () {
+    group('cooldown expired (dismissed 24h ago)', () {
+      test('shows banner when dismissed exactly 24 hours ago and unread > 0',
+          () {
+        final spamMailbox = makeSpamMailbox(unreadCount: 3);
+        when(spamReportRepository
+                .getLastTimeDismissedSpamReportedMilliseconds())
+            .thenAnswer((_) async => msAgo(24));
+        when(spamReportRepository.getSpamMailboxCached(accountId, userName))
+            .thenAnswer((_) async => spamMailbox);
+
+        expect(
+          interactor.execute(accountId, userName),
+          emitsInOrder([
+            Right(GetSpamMailboxCachedLoading()),
+            Right(GetSpamMailboxCachedSuccess(spamMailbox)),
+          ]),
+        );
+      });
+
       test('shows banner when dismissed 25 hours ago and unread > 0', () {
         final spamMailbox = makeSpamMailbox(unreadCount: 3);
         when(spamReportRepository
