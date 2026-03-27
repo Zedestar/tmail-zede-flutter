@@ -87,7 +87,7 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
       emitFailure(
         controller: currentController,
         failure: AddALabelToAnEmailFailure(
-          exception: LabelKeywordIsNull(),
+          exception: const LabelKeywordIsNull(),
           labelDisplay: labelDisplay,
         ),
       );
@@ -151,7 +151,7 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
       emitFailure(
         controller: currentController,
         failure: RemoveALabelFromAnEmailFailure(
-          exception: LabelKeywordIsNull(),
+          exception: const LabelKeywordIsNull(),
           labelDisplay: labelDisplay,
         ),
       );
