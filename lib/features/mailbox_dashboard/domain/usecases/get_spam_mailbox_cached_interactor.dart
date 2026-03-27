@@ -49,8 +49,12 @@ class GetSpamMailboxCachedInteractor {
     final lastTime = DateTime.fromMillisecondsSinceEpoch(lastTimeDismissedMs);
     final now = DateTime.now();
     final elapsed = now.difference(lastTime);
+    if (elapsed.isNegative) {
+      if (elapsed.abs() < const Duration(days: 1)) return false;
+      return true;
+    }
     final isIntervalElapsed =
-        elapsed.inHours > spamReportBannerDisplayIntervalInHours;
+        elapsed.inHours >= spamReportBannerDisplayIntervalInHours;
 
     return isIntervalElapsed;
   }
