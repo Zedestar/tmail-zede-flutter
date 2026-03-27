@@ -170,6 +170,43 @@ void main() {
       });
     });
 
+    group('clock-skew (future timestamp)', () {
+      test(
+          'does not show banner when stored timestamp is 12 hours in the future (< 1 day clock skew)',
+          () {
+        when(spamReportRepository
+                .getLastTimeDismissedSpamReportedMilliseconds())
+            .thenAnswer((_) async => msAgo(-12));
+
+        expect(
+          interactor.execute(accountId, userName),
+          emitsInOrder([
+            Right(GetSpamMailboxCachedLoading()),
+            leftWithException<SpamDismissCooldownActiveException>(),
+          ]),
+        );
+      });
+
+      test(
+          'shows banner when stored timestamp is 25 hours in the future (>= 1 day clock skew, likely clock reset)',
+          () {
+        final spamMailbox = makeSpamMailbox(unreadCount: 3);
+        when(spamReportRepository
+                .getLastTimeDismissedSpamReportedMilliseconds())
+            .thenAnswer((_) async => msAgo(-25));
+        when(spamReportRepository.getSpamMailboxCached(accountId, userName))
+            .thenAnswer((_) async => spamMailbox);
+
+        expect(
+          interactor.execute(accountId, userName),
+          emitsInOrder([
+            Right(GetSpamMailboxCachedLoading()),
+            Right(GetSpamMailboxCachedSuccess(spamMailbox)),
+          ]),
+        );
+      });
+    });
+
     group('error handling', () {
       test('wraps repository exception in GetSpamMailboxCachedFailure', () {
         final exception = Exception('cache error');
