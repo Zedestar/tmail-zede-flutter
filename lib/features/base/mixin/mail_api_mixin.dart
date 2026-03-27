@@ -138,8 +138,7 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
         jmapRequestBuilder.invocation(queryEmailMethod);
 
     if (collapseThreads == true) {
-      properties ??= Properties({EmailProperty.threadId});
-      properties.value.add(EmailProperty.threadId);
+      properties = Properties({...?properties?.value, EmailProperty.threadId});
     }
 
     final getEmailMethod = GetEmailMethod(accountId)

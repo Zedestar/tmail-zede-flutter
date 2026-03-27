@@ -654,6 +654,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
       properties: propertiesCreated,
       collapseThreads: collapseThreads,
     );
-    yield emailResponse;
+    final emailListLoaded = collapseThreads == true
+        ? emailResponse.threadEmails
+        : emailResponse.emailList;
+    yield emailResponse.copyWith(emailList: emailListLoaded);
   }
 }

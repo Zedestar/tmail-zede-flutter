@@ -481,7 +481,10 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated')));
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads')));
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
       verify(getEmailsInMailboxInteractor.execute(
@@ -491,7 +494,10 @@ void main() {
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads')));
     });
 
     test('WHEN user use advanced search/sort/filter feature, '
@@ -539,17 +545,23 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated')));
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads')));
       expect(searchController.sortOrderFiltered, SearchEmailFilter.defaultSortOrder);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        emailFilter: threadController.getEmailFilterForLoadMailbox(),
+        emailFilter: anyNamed('emailFilter'),
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads')
       )).called(1);
     });
 
