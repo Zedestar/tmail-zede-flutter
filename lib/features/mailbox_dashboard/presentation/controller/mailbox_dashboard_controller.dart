@@ -152,6 +152,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/setup_preferences_setting_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -167,6 +168,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_ru
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_ai_scribe_config_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
@@ -239,7 +241,8 @@ class MailboxDashBoardController extends ReloadableController
         SaaSPremiumMixin,
         AiScribeMixin,
         SearchLabelFilterModalMixin,
-        AddLabelToEmailMixin {
+        AddLabelToEmailMixin,
+        SetupPreferencesSettingMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -425,6 +428,7 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     loadAIScribeConfig();
+    loadPreferencesSetting();
     super.onReady();
   }
 
@@ -555,6 +559,8 @@ class MailboxDashBoardController extends ReloadableController
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
     } else if (success is GetLinagoraEcosystemSuccess) {
       handleGetLinagoraEcosystemSuccess(success);
+    } else if (success is GetLocalSettingsSuccess) {
+      scribeLoadPreferencesSettingSuccess(success);
     } else {
       subscribeLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
@@ -608,6 +614,8 @@ class MailboxDashBoardController extends ReloadableController
       handleLoadAIScribeConfigFailure();
     } else if (failure is GetLinagoraEcosystemFailure) {
       handleGetLinagoraEcosystemFailure(failure);
+    } else if (failure is GetLocalSettingsFailure) {
+      scribeLoadPreferencesSettingFailure(failure);
     } else {
       subscribeLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
@@ -941,6 +949,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     loadLinagoraEcosystem();
+    loadPreferencesSetting();
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
@@ -2200,6 +2209,7 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent != null) {
       labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
     }
+    loadPreferencesSetting();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -3448,6 +3458,14 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   @override
+  BaseController get controller => this;
+
+  @override
+  OnPreferencesSettingChanged get onPreferencesSettingChanged => ({bool isThreadStateChanged = false}) {
+    log('MailboxDashBoardController::onPreferencesSettingChanged: isThreadStateChanged = $isThreadStateChanged');
+  };
+
+  @override
   void onClose() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
@@ -3481,6 +3499,7 @@ class MailboxDashBoardController extends ReloadableController
     paywallController = null;
     cachedLinagoraEcosystem = null;
     _disposeWorkerObxVariables();
+    clearPreferencesSetting();
     super.onClose();
   }
 

@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/thread_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 
@@ -86,7 +87,15 @@ class GetEmailsInMailboxInteractor {
     MailboxId? currentMailboxId,
   }) {
     final presentationEmailList = emailResponse.emailList
-      ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
+      ?.map((email) {
+          if (email is ThreadEmail) {
+            return email.toPresentationEmail(
+              emailIdsInThread: email.emailIdsInThread,
+            );
+          } else {
+            return email.toPresentationEmail();
+          }
+        }).toList() ?? List.empty();
 
     return Right<Failure, Success>(GetAllEmailSuccess(
       emailList: presentationEmailList,

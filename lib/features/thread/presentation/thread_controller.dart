@@ -682,6 +682,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
+        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
