@@ -126,7 +126,7 @@ void main() {
             .thenAnswer((_) => failureStream(NoUnreadSpamEmailsException()));
 
         controller.getSpamMailboxCached(testAccountId, testUserName);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await untilCalled(storeSpamReportInteractor.execute(any));
 
         verify(storeSpamReportInteractor.execute(any)).called(1);
         expect(controller.presentationSpamMailbox.value, isNull);
@@ -139,7 +139,7 @@ void main() {
             .thenAnswer((_) => failureStream(NoUnreadSpamEmailsException()));
 
         controller.getSpamMailboxCached(testAccountId, testUserName);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verifyNever(storeSpamReportInteractor.execute(any));
         expect(controller.presentationSpamMailbox.value, isNull);
@@ -152,7 +152,7 @@ void main() {
             .thenAnswer((_) => failureStream(NoUnreadSpamEmailsException()));
 
         controller.getSpamMailboxCached(testAccountId, testUserName);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verifyNever(storeSpamReportInteractor.execute(any));
         expect(controller.presentationSpamMailbox.value, isNull);
@@ -167,7 +167,7 @@ void main() {
             .thenAnswer((_) => failureStream(SpamDismissCooldownActiveException()));
 
         controller.getSpamMailboxCached(testAccountId, testUserName);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verifyNever(storeSpamReportInteractor.execute(any));
         expect(controller.presentationSpamMailbox.value, isNull);
@@ -187,7 +187,7 @@ void main() {
             ]));
 
         controller.getSpamMailboxCached(testAccountId, testUserName);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         expect(controller.presentationSpamMailbox.value, isNotNull);
       });
