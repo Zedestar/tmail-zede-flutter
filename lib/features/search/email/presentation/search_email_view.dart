@@ -84,6 +84,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               if (controller.selectionMode.value == SelectMode.ACTIVE) {
                 final mapMailboxById = controller.mailboxDashBoardController.mapMailboxById;
                 final selectedEmails = controller.listResultSearch.listEmailSelected;
+                final isLabelAvailable =
+                    controller.mailboxDashBoardController.isLabelAvailable;
 
                 final actionTypes = _createEmailSelectionActionTypes(
                   mapMailboxById,
@@ -103,6 +105,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                         type,
                         emails,
                         mapMailboxById,
+                        isLabelAvailable,
                       ),
                 );
               } else {

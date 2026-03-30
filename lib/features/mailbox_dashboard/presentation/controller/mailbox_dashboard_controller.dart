@@ -73,6 +73,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_e
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
@@ -90,6 +91,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identit
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/add_label_to_email_mixin.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/add_list_labels_to_list_emails_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -239,7 +241,8 @@ class MailboxDashBoardController extends ReloadableController
         SaaSPremiumMixin,
         AiScribeMixin,
         SearchLabelFilterModalMixin,
-        AddLabelToEmailMixin {
+        AddLabelToEmailMixin,
+        AddListLabelsToListEmailsMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -557,6 +560,7 @@ class MailboxDashBoardController extends ReloadableController
       handleGetLinagoraEcosystemSuccess(success);
     } else {
       subscribeLabelViewStateSuccess(success);
+      subscribeListLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
     }
   }
@@ -610,6 +614,7 @@ class MailboxDashBoardController extends ReloadableController
       handleGetLinagoraEcosystemFailure(failure);
     } else {
       subscribeLabelViewStateFailure(failure);
+      subscribeListLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
     }
   }
@@ -3494,4 +3499,12 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   OnSyncLabelForEmail? get onSyncLabelForEmail => syncLabelForEmail;
+
+  @override
+  AddListLabelToListEmailsInteractor? get addListLabelToListEmailInteractor =>
+      getBinding<AddListLabelToListEmailsInteractor>();
+
+  @override
+  OnSyncListLabelForListEmail? get onSyncListLabelForListEmail =>
+      syncListLabelForListEmail;
 }

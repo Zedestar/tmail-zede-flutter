@@ -1053,6 +1053,14 @@ class SearchEmailController extends BaseController
         cancelSelectionMode();
         unSpamSelectedMultipleEmail(listEmails);
         break;
+      case EmailActionType.labelAs:
+        mailboxDashBoardController.openChooseLabelModal(
+          labels: mailboxDashBoardController.labelController.labels,
+          selectedEmails: listEmails,
+          imagePaths: imagePaths,
+          onCallBackAction: cancelSelectionMode,
+        );
+        break;
       default:
         break;
     }
