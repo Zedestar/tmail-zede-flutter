@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
@@ -41,8 +42,16 @@ mixin EmailActionController {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  void editDraftEmail(PresentationEmail presentationEmail) {
-    mailboxDashBoardController.openComposer(ComposerArguments.editDraftEmail(presentationEmail));
+  void editDraftEmail({
+    required PresentationEmail presentationEmail,
+    required MailboxId draftMailboxId,
+  }) {
+    mailboxDashBoardController.openComposer(
+      ComposerArguments.editDraftEmail(
+        presentationEmail: presentationEmail,
+        savedDraftMailboxId: draftMailboxId,
+      ),
+    );
   }
 
   void editAsNewEmail(

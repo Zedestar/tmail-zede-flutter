@@ -14,11 +14,9 @@ extension GetTrashMailboxIdAndPathExtension on MailboxDashBoardController {
       trashPath: null as String?,
     );
 
-    final mailbox = selectedMailbox.value ?? emailMailbox;
+    if (emailMailbox.isPersonal) return defaultResult;
 
-    if (mailbox.isPersonal) return defaultResult;
-
-    final namespace = mailbox.namespace;
+    final namespace = emailMailbox.namespace;
     if (namespace == null) return defaultResult;
 
     final trashId = findDefaultMailboxIdInTeamMailbox(

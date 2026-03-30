@@ -39,6 +39,7 @@ class ComposerArguments extends RouterArguments {
   final EmailActionType? savedActionType;
   final EmailId? savedEmailDraftId;
   final EmailId? savedEmailTemplateId;
+  final MailboxId? savedDraftMailboxId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -68,6 +69,7 @@ class ComposerArguments extends RouterArguments {
     this.savedActionType,
     this.savedEmailDraftId,
     this.savedEmailTemplateId,
+    this.savedDraftMailboxId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -109,10 +111,13 @@ class ComposerArguments extends RouterArguments {
     bcc: bcc,
   );
 
-  factory ComposerArguments.editDraftEmail(PresentationEmail presentationEmail) =>
-    ComposerArguments(
+  factory ComposerArguments.editDraftEmail({
+    required PresentationEmail presentationEmail,
+    required MailboxId savedDraftMailboxId,
+  }) => ComposerArguments(
       emailActionType: EmailActionType.editDraft,
       presentationEmail: presentationEmail,
+      savedDraftMailboxId: savedDraftMailboxId,
     );
   
   factory ComposerArguments.editAsNewEmail(
@@ -265,6 +270,7 @@ class ComposerArguments extends RouterArguments {
     savedActionType,
     savedEmailDraftId,
     sendingEmailActionType,
+    savedDraftMailboxId,
   ];
 
   ComposerArguments copyWith({
@@ -295,6 +301,7 @@ class ComposerArguments extends RouterArguments {
     EmailActionType? savedActionType,
     EmailId? savedEmailDraftId,
     EmailId? savedEmailTemplateId,
+    MailboxId? savedDraftMailboxId,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -324,6 +331,7 @@ class ComposerArguments extends RouterArguments {
       savedActionType: savedActionType ?? this.savedActionType,
       savedEmailDraftId: savedEmailDraftId ?? this.savedEmailDraftId,
       savedEmailTemplateId: savedEmailTemplateId ?? this.savedEmailTemplateId,
+      savedDraftMailboxId: savedDraftMailboxId ?? this.savedDraftMailboxId,
     );
   }
 }

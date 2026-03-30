@@ -66,34 +66,25 @@ void main() {
     );
 
     test(
-      'SHOULD return default trash id with null path '
-      'WHEN selectedMailbox is personal',
+      'SHOULD return team trash id '
+      'WHEN emailMailbox is team mailbox even if selectedMailbox is personal',
       () {
         when(mockDashBoardController.selectedMailbox)
             .thenReturn(Rxn(personalMailbox));
+        when(mockDashBoardController.findDefaultMailboxIdInTeamMailbox(
+          namespace: teamNamespace,
+          mailboxName: PresentationMailbox.trashRole,
+        )).thenReturn(teamTrashId);
+        when(mockDashBoardController.getTeamMailboxNodePathWithSeparator(
+          mailboxId: teamTrashId,
+        )).thenReturn('Team/Trash');
 
         final result = mockDashBoardController.getTrashMailboxIdAndPath(
           teamMailbox,
         );
 
-        expect(result.trashId, equals(defaultTrashId));
-        expect(result.trashPath, isNull);
-      },
-    );
-
-    test(
-      'SHOULD use selectedMailbox over emailMailbox '
-      'WHEN selectedMailbox is not null',
-      () {
-        when(mockDashBoardController.selectedMailbox)
-            .thenReturn(Rxn(personalMailbox));
-
-        final result = mockDashBoardController.getTrashMailboxIdAndPath(
-          teamMailbox,
-        );
-
-        expect(result.trashId, equals(defaultTrashId));
-        expect(result.trashPath, isNull);
+        expect(result.trashId, equals(teamTrashId));
+        expect(result.trashPath, equals('Team/Trash'));
       },
     );
 
