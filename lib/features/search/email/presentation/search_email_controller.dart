@@ -924,7 +924,10 @@ class SearchEmailController extends BaseController
     switch(actionType) {
       case EmailActionType.preview:
         if (mailboxContain?.isDrafts == true) {
-          editDraftEmail(selectedEmail);
+          editDraftEmail(
+            presentationEmail: selectedEmail,
+            draftMailboxId: mailboxContain!.id,
+          );
         } else {
           previewEmail(selectedEmail);
         }
