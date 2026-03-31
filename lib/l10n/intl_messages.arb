@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-11T14:39:59.601630",
+  "@@last_modified": "2026-03-31T11:37:47.128973",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5459,5 +5459,21 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "rejectConfirmDialogTitle": "Drop all mails coming",
+  "@rejectConfirmDialogTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rejectConfirmDialogSubtitle": "Do you REALLY want to drop all mails coming from ~ {message} ~",
+  "@rejectConfirmDialogSubtitle": {
+    "type": "text",
+    "placeholders_order": [
+      "message"
+    ],
+    "placeholders": {
+      "message": {}
+    }
   }
 }

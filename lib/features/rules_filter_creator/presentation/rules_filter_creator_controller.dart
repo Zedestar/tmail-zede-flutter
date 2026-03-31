@@ -33,8 +33,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_em
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_rule_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/list_rule_filter_action_argument_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/mixin/validate_rule_reject_action_mixin.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
@@ -45,7 +47,8 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class RulesFilterCreatorController extends BaseMailboxController {
+class RulesFilterCreatorController extends BaseMailboxController
+    with ValidateRuleRejectActionMixin {
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
 
@@ -613,7 +616,21 @@ class RulesFilterCreatorController extends BaseMailboxController {
         ));
       ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
     }
-    popBack(result: ruleFilterRequest);
+
+    if (reject) {
+      final message = listRuleCondition.getPreviewWhenEditing(
+        appLocalizations,
+      );
+      showConfirmRejectDialog(
+        context: context,
+        message: message,
+        ruleRequest: ruleFilterRequest,
+        onConfirmAction: (ruleFilterRequest) =>
+            popBack(result: ruleFilterRequest),
+      );
+    } else {
+      popBack(result: ruleFilterRequest);
+    }
   }
 
   void closeView(BuildContext context) {

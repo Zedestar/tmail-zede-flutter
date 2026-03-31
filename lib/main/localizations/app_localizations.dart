@@ -5776,4 +5776,19 @@ class AppLocalizations {
       name: 'labelDescriptionHintText',
     );
   }
+
+  String get rejectConfirmDialogTitle {
+    return Intl.message(
+      'Drop all mails coming',
+      name: 'rejectConfirmDialogTitle',
+    );
+  }
+
+  String rejectConfirmDialogSubtitle(String message) {
+    return Intl.message(
+      'Do you REALLY want to drop all mails coming from ~ $message ~',
+      name: 'rejectConfirmDialogSubtitle',
+      args: [message],
+    );
+  }
 }
