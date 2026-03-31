@@ -685,7 +685,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         onNotification: (ScrollNotification scrollInfo) {
           if (scrollInfo is ScrollEndNotification
               && controller.searchMoreState != SearchMoreState.waiting
-              && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
+              && scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent
               && scrollInfo.metrics.axisDirection == AxisDirection.down) {
             controller.searchMoreEmailsAction();
           }
