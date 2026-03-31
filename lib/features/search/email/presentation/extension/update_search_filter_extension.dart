@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -12,9 +14,18 @@ extension UpdateSearchFilterExtension on SearchEmailController {
         updateSimpleSearchFilter(hasAttachmentOption: const None());
         break;
       case QuickSearchFilter.starred:
-      case QuickSearchFilter.events:
-        updateSimpleSearchFilter(hasKeywordOption: const None());
+        final keywords = Set<String>.from(listHasKeywordFiltered)
+          ..remove(KeyWordIdentifier.emailFlagged.value);
+        updateSimpleSearchFilter(
+          hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
+        );
         break;
+      case QuickSearchFilter.events:
+        final keywords = Set<String>.from(listHasKeywordFiltered)
+          ..remove(KeyWordIdentifierExtension.eventsMail.value);
+        updateSimpleSearchFilter(
+          hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
+        );
       case QuickSearchFilter.unread:
         updateSimpleSearchFilter(unreadOption: const None());
         break;

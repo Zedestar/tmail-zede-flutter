@@ -27,12 +27,10 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     searchController.updateFilterEmail(
       hasKeywordOption: Some(listHasKeywordFiltered),
     );
-    dispatchAction(StartSearchEmailAction());
   }
 
   void deleteUnreadSearchFilter() {
     searchController.updateFilterEmail(unreadOption: const None());
-    dispatchAction(StartSearchEmailAction());
   }
 
   void deleteEventsSearchFilter() {
@@ -41,7 +39,6 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     searchController.updateFilterEmail(
       hasKeywordOption: Some(listHasKeywordFiltered),
     );
-    dispatchAction(StartSearchEmailAction());
   }
 
   void deleteQuickSearchFilter({required QuickSearchFilter filter}) {

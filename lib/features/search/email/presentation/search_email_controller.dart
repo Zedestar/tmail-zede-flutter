@@ -24,6 +24,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -1141,6 +1142,11 @@ class SearchEmailController extends BaseController
 
   void _deleteStarredSearchFilter() {
     _updateSimpleSearchFilter(hasKeywordOption: const None());
+    final keywords = {...listHasKeywordFiltered}
+      ..remove(KeyWordIdentifier.emailFlagged.value);
+    _updateSimpleSearchFilter(
+      hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
+    );
     _searchEmailAction();
   }
 
@@ -1150,7 +1156,11 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteEventsSearchFilter() {
-    _updateSimpleSearchFilter(hasKeywordOption: const None());
+    final keywords = {...listHasKeywordFiltered}
+      ..remove(KeyWordIdentifierExtension.eventsMail.value);
+    _updateSimpleSearchFilter(
+      hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
+    );
     _searchEmailAction();
   }
 
