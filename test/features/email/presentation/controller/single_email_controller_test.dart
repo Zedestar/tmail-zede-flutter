@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -78,6 +79,7 @@ const fallbackGenerators = {
   MockSpec<DownloadManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CachingManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<LanguageCacheManager>(fallbackGenerators: fallbackGenerators),
+  MockSpec<LabelController>(fallbackGenerators: fallbackGenerators),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
   MockSpec<DeleteCredentialInteractor>(),
@@ -108,6 +110,7 @@ void main() {
   final storeOpenedEmailInteractor = MockStoreOpenedEmailInteractor();
   final mailboxDashboardController = MockMailboxDashBoardController();
   final downloadController = MockDownloadController();
+  final labelController = MockLabelController();
   final downloadManager = MockDownloadManager();
   final cachingManager = MockCachingManager();
   final languageCacheManager = MockLanguageCacheManager();
@@ -139,6 +142,7 @@ void main() {
 
   setUpAll(() {
     Get.put<DownloadController>(downloadController);
+    Get.put<LabelController>(labelController);
     Get.put<MailboxDashBoardController>(mailboxDashboardController);
     Get.put<DownloadManager>(downloadManager);
     Get.put<CachingManager>(cachingManager);
@@ -162,6 +166,7 @@ void main() {
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);
+    when(mailboxDashboardController.labelController).thenReturn(labelController);
   });
 
   setUp(() {
