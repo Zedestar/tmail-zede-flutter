@@ -5752,19 +5752,19 @@
       "labelName": {}
     }
   },
-  "pleaseEnterNameYourNewLabel": "Пожалуйста, введите название нового ярлыка",
+  "pleaseEnterNameYourNewLabel": "Пожалуйста, введите название новой метки",
   "@pleaseEnterNameYourNewLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "chooseALabelColor": "Выберите цвет ярлыка",
+  "chooseALabelColor": "Выберите цвет метки",
   "@chooseALabelColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "tagNameAlreadyExists": "Ярлык с таким названием уже существует. Пожалуйста, выберите другое название.",
+  "tagNameAlreadyExists": "Метка с таким названием уже существует. Пожалуйста, выберите другое название.",
   "@tagNameAlreadyExists": {
     "type": "text",
     "placeholders_order": [],
@@ -5776,31 +5776,31 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewLabelFailure": "Ошибка создания нового ярлыка",
+  "createNewLabelFailure": "Ошибка создания новой метки",
   "@createNewLabelFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "labelVisibilitySettingExplanation": "Показывать ярлыки, назначенные письмам, непосредственно в списке сообщений для удобной категоризации.",
+  "labelVisibilitySettingExplanation": "Показывать метки, назначенные письмам, непосредственно в списке сообщений для удобной категоризации.",
   "@labelVisibilitySettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "labelVisibilityToggleDescription": "Показывать ярлыки",
+  "labelVisibilityToggleDescription": "Показывать метки",
   "@labelVisibilityToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "updateTheLabelName": "Обновить название ярлыка",
+  "updateTheLabelName": "Обновить название метки",
   "@updateTheLabelName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "areYouSureYouWantToDeleteTheLabel": "Вы уверены, что хотите удалить ярлык \"{labelName}\"?",
+  "areYouSureYouWantToDeleteTheLabel": "Вы уверены, что хотите удалить метку \"{labelName}\"?",
   "@areYouSureYouWantToDeleteTheLabel": {
     "type": "text",
     "placeholders_order": [
