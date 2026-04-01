@@ -39,6 +39,8 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
+import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -1323,6 +1325,14 @@ class ThreadController extends BaseController with EmailActionController {
         break;
       case EmailActionType.compose:
         mailboxDashBoardController.openComposer(ComposerArguments());
+        break;
+      case EmailActionType.labelAs:
+        Get.find<AddListLabelToListEmailsDelegate>().openChooseLabelModal(
+          selectedEmails: selectionEmail,
+          imagePaths: imagePaths,
+          onCancel: cancelSelectEmail,
+          onSync: mailboxDashBoardController.syncListLabelForListEmail,
+        );
         break;
       default:
         break;
