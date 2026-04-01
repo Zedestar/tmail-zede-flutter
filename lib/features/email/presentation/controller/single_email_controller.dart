@@ -778,6 +778,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
+    final emailId = email.id;
+    if (emailId == null) {
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundEmailIdException(),
+      );
+      return;
+    }
+
     final moveActionRequest = emailActionReactor.buildMoveToTrashRequest(
       email,
       trashMailboxId: trashId,

@@ -23,6 +23,17 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
     EmailActionType actionType,
     {MailboxId? selectedMailboxId, String? destinationFolderPath}
   ) {
+    final isInSearchOrVirtualFolder =
+        searchController.isSearchEmailRunning ||
+        selectedMailbox.value?.isVirtualFolder == true;
+
+    // In search / virtual-folder mode the selected mailbox does not represent
+    // the emails' actual home namespace, so trash must be resolved per email.
+    if (actionType == EmailActionType.moveToTrash && isInSearchOrVirtualFolder) {
+      _moveEmailsToTrashAcrossNamespaces(emails);
+      return;
+    }
+
     MailboxId? destinationMailboxId;
 
     if (actionType == EmailActionType.moveToMailbox) {
@@ -58,8 +69,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
 
     final mapEmailIdsByMailboxId = <MailboxId, List<EmailId>>{};
 
-    if (searchController.isSearchEmailRunning ||
-        selectedMailbox.value?.isVirtualFolder == true) {
+    if (isInSearchOrVirtualFolder) {
       for (final email in emails) {
         final mailboxId = email.firstMailboxIdAvailable;
         final emailId = email.id;
@@ -114,5 +124,75 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
       ),
       emailIdsWithReadStatus,
     );
+  }
+
+  void _moveEmailsToTrashAcrossNamespaces(List<PresentationEmail> emails) {
+    if (accountId.value == null || sessionCurrent == null) {
+      consumeState(Stream.value(Left(MoveMultipleEmailToMailboxFailure(
+        EmailActionType.moveToTrash,
+        MoveAction.moving,
+        ParametersIsNullException(),
+      ))));
+      return;
+    }
+
+    // Group emails by resolved trash destination: trashId → (path, sourceId → [emailIds])
+    final groups = <MailboxId,
+        ({String? trashPath, Map<MailboxId, List<EmailId>> sourceToEmails})>{};
+
+    for (final email in emails) {
+      final sourceMailboxId = email.firstMailboxIdAvailable;
+      final emailId = email.id;
+      if (sourceMailboxId == null || emailId == null) continue;
+
+      final sourceMailbox = mapMailboxById[sourceMailboxId];
+      if (sourceMailbox == null) continue;
+
+      final (:trashId, :trashPath) = getTrashMailboxIdAndPath(sourceMailbox);
+      if (trashId == null || sourceMailboxId == trashId) continue;
+
+      groups
+          .putIfAbsent(trashId, () => (trashPath: trashPath, sourceToEmails: {}))
+          .sourceToEmails
+          .putIfAbsent(sourceMailboxId, () => [])
+          .add(emailId);
+    }
+
+    if (groups.isEmpty) {
+      consumeState(Stream.value(Left(MoveMultipleEmailToMailboxFailure(
+        EmailActionType.moveToTrash,
+        MoveAction.moving,
+        ParametersIsNullException(),
+      ))));
+      return;
+    }
+
+    final emailIdsWithReadStatus = Map.fromEntries(
+      emails
+          .where((e) => e.id != null)
+          .map((e) => MapEntry(e.id!, e.hasRead)),
+    );
+
+    for (final entry in groups.entries) {
+      final trashId = entry.key;
+      final resolvedPath = entry.value.trashPath ??
+          (currentContext != null
+              ? mapMailboxById[trashId]?.getDisplayName(currentContext!)
+              : null);
+
+      log('$runtimeType::_moveEmailsToTrashAcrossNamespaces: trashId=$trashId sources=${entry.value.sourceToEmails.keys}');
+      moveSelectedEmailMultipleToMailboxAction(
+        sessionCurrent!,
+        accountId.value!,
+        MoveToMailboxRequest(
+          entry.value.sourceToEmails,
+          trashId,
+          MoveAction.moving,
+          EmailActionType.moveToTrash,
+          destinationPath: resolvedPath,
+        ),
+        emailIdsWithReadStatus,
+      );
+    }
   }
 }

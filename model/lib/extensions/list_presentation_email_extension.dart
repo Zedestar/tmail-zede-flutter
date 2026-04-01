@@ -56,7 +56,8 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
   ) {
     return any((email) {
       final mailboxContain = email.findMailboxContain(mapMailbox);
-      return mailboxContain?.isArchive != true;
+      return mailboxContain?.isArchive != true &&
+          mailboxContain?.isChildOfTeamMailboxes != true;
     });
   }
 

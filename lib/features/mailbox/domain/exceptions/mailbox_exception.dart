@@ -41,3 +41,10 @@ class NotFoundTrashMailboxException extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundTrashMailboxException';
 }
+
+class NotFoundEmailIdException extends AppBaseException {
+  NotFoundEmailIdException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundEmailIdException';
+}

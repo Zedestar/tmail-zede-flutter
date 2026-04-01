@@ -1864,7 +1864,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     if (CapabilityIdentifier.jmapMailboxClear.isSupported(session, accountId) &&
-        trashFolder.isTrashTeamMailbox != true) {
+        !trashFolder.isFirstLevelTeamSystemFolder(mapMailboxById, PresentationMailbox.trashRole)) {
       clearMailbox(
         session,
         accountId,
@@ -2406,8 +2406,7 @@ class MailboxDashBoardController extends ReloadableController
     PresentationMailbox? mailbox
   ) {
     return mailbox != null &&
-      mailbox.isTrash &&
-      mailbox.myRights?.mayRemoveItems == true &&
+      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems != false)) &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
@@ -2418,8 +2417,7 @@ class MailboxDashBoardController extends ReloadableController
     PresentationMailbox? mailbox
   ) {
     return mailbox != null &&
-      mailbox.isTrash &&
-      mailbox.myRights?.mayRemoveItems == true &&
+      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems != false)) &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);

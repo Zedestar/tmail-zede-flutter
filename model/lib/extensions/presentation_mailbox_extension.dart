@@ -40,18 +40,29 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isVirtualFolder => isFavorite || isActionRequired;
 
-  bool get isTrash {
-    if (isPersonal) {
-      return role == PresentationMailbox.roleTrash;
-    } else {
-      return isTrashTeamMailbox;
-    }
+  bool get isTrash => isTrashPersonal || isTrashTeamMailbox;
+
+  bool get isTrashPersonal =>
+      isPersonal && role == PresentationMailbox.roleTrash;
+
+  bool _isTeamMailboxWithRole(String role) =>
+      isChildOfTeamMailboxes &&
+      name?.name.toLowerCase() == role.toLowerCase();
+
+  /// Stricter version of [_isTeamMailboxWithRole] that additionally checks
+  /// the parent is a team-root node (no parentId), ensuring only first-level
+  /// system folders match — not nested user subfolders like Team/Project/Trash.
+  bool isFirstLevelTeamSystemFolder(
+    Map<MailboxId, PresentationMailbox> mailboxMap,
+    String role,
+  ) {
+    if (!_isTeamMailboxWithRole(role)) return false;
+    final parent = parentId != null ? mailboxMap[parentId] : null;
+    return parent?.isTeamMailboxes == true;
   }
 
-  bool get isTrashTeamMailbox {
-    return isChildOfTeamMailboxes &&
-        name?.name.toLowerCase() == PresentationMailbox.trashRole.toLowerCase();
-  }
+  bool get isTrashTeamMailbox =>
+      _isTeamMailboxWithRole(PresentationMailbox.trashRole);
 
   bool get isDrafts {
     if (isPersonal) {
@@ -61,11 +72,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
     }
   }
 
-  bool get isDraftsTeamMailbox {
-    return isChildOfTeamMailboxes &&
-        name?.name.toLowerCase() ==
-            PresentationMailbox.draftsRole.toLowerCase();
-  }
+  bool get isDraftsTeamMailbox =>
+      _isTeamMailboxWithRole(PresentationMailbox.draftsRole);
 
   bool get isTemplates {
     if (isPersonal) {
@@ -75,11 +83,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
     }
   }
 
-  bool get isTemplatesTeamMailbox {
-    return isChildOfTeamMailboxes &&
-        name?.name.toLowerCase() ==
-            PresentationMailbox.templatesRole.toLowerCase();
-  }
+  bool get isTemplatesTeamMailbox =>
+      _isTeamMailboxWithRole(PresentationMailbox.templatesRole);
 
   bool get isSent => role == PresentationMailbox.roleSent;
 
