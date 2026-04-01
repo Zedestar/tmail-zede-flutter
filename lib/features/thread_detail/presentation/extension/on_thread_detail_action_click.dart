@@ -147,7 +147,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       if (mailboxDashBoardController.isLabelAvailable &&
           mailboxDashBoardController.labelController.labels.isNotEmpty)
         EmailActionType.labelAs,
-      if (!threadDetailIsArchived) EmailActionType.archiveMessage,
+      if (!threadDetailIsArchived && !threadDetailIsTeamMailbox) EmailActionType.archiveMessage,
       threadDetailIsSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
       threadDetailIsTrashed
           ? EmailActionType.deletePermanently

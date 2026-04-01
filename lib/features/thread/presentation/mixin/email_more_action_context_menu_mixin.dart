@@ -78,7 +78,7 @@ mixin EmailMoreActionContextMenu on LabelSubMenuMixin {
       if (PlatformInfo.isWeb) EmailActionType.openInNewTab,
       if (!isDrafts && !isChildOfTeam)
         isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-      if (!isArchive) EmailActionType.archiveMessage,
+      if (!isArchive && !isChildOfTeam) EmailActionType.archiveMessage,
       if (!isDrafts && !isTemplates) EmailActionType.editAsNewEmail,
     ];
   }

@@ -48,7 +48,8 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
         EmailSelectionActionType.markAsNotSpam
       else
         EmailSelectionActionType.markAsSpam,
-      if (selectedMailbox?.isArchive != true)
+      if (selectedMailbox?.isArchive != true &&
+          selectedMailbox?.isChildOfTeamMailboxes != true)
         EmailSelectionActionType.archiveMessage,
       if (selectedMailbox?.isDeletePermanentlyEnabled == true)
         EmailSelectionActionType.deletePermanently,

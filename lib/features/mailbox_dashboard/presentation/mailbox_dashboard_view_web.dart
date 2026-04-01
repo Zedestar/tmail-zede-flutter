@@ -506,7 +506,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
       }),
       Obx(() {
-        if (controller.selectedMailbox.value?.isTrash == true) {
+        if (controller.selectedMailbox.value?.isTrashPersonal == true) {
           return TMailButtonWidget.fromIcon(
             key: const Key('recover_deleted_messages_button'),
             icon: controller.imagePaths.icRecoverDeletedMessages,

@@ -107,17 +107,25 @@ mixin EmailActionController {
       return;
     }
 
+    final emailId = email.id;
+    if (emailId == null) {
+      mailboxDashBoardController.emitMoveToTrashFailure(
+        NotFoundEmailIdException(),
+      );
+      return;
+    }
+
     _moveToTrashAction(
       session,
       accountId,
       MoveToMailboxRequest(
-        {mailboxContain.id: email.id != null ? [email.id!] : []},
+        {mailboxContain.id: [emailId]},
         trashId,
         MoveAction.moving,
         EmailActionType.moveToTrash,
         destinationPath: trashPath,
       ),
-      email.id != null ? {email.id!: email.hasRead} : {},
+      {emailId: email.hasRead},
     );
   }
 

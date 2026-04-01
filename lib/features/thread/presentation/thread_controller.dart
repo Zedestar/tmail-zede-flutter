@@ -1563,9 +1563,11 @@ class ThreadController extends BaseController with EmailActionController {
       return DismissDirection.none;
     }
 
-    return isInArchiveMailbox(email) || !hasArchiveMailbox()
-      ? DismissDirection.startToEnd
-      : DismissDirection.horizontal;
+    return isInArchiveMailbox(email) ||
+            !hasArchiveMailbox() ||
+            email.mailboxContain?.isChildOfTeamMailboxes == true
+        ? DismissDirection.startToEnd
+        : DismissDirection.horizontal;
   }
 
   bool isInArchiveMailbox(PresentationEmail email) => email.mailboxContain?.isArchive == true;
