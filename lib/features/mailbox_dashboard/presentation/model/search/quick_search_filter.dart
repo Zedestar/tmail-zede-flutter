@@ -58,7 +58,8 @@ enum QuickSearchFilter {
       case QuickSearchFilter.from:
         return AppLocalizations.of(context).from_email_address_prefix;
       case QuickSearchFilter.folder:
-        return mailbox?.getDisplayName(context) ?? AppLocalizations.of(context).all;
+        return mailbox?.getFolderNameForQuickSearch(AppLocalizations.of(context))
+            ?? AppLocalizations.of(context).allEmail;
       case QuickSearchFilter.to:
         return AppLocalizations.of(context).to_email_address_prefix;
       case QuickSearchFilter.starred:
