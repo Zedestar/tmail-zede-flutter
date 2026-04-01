@@ -35,10 +35,12 @@ extension GetThreadDetailActionStatus on ThreadDetailController {
 
   bool get threadDetailIsTeamMailbox {
     return emailsInThreadDetailInfo.any((email) {
-      final mailboxId = email.mailboxIdContain;
-      if (mailboxId == null) return false;
-      return mailboxDashBoardController.mapMailboxById[mailboxId]
-              ?.isChildOfTeamMailboxes ==
+      return email.mailboxIds?.keys.any(
+            (mailboxId) =>
+                mailboxDashBoardController
+                    .mapMailboxById[mailboxId]?.isChildOfTeamMailboxes ==
+                true,
+          ) ==
           true;
     });
   }

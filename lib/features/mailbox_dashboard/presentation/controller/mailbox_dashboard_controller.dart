@@ -2406,7 +2406,7 @@ class MailboxDashBoardController extends ReloadableController
     PresentationMailbox? mailbox
   ) {
     return mailbox != null &&
-      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems != false)) &&
+      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
@@ -2417,7 +2417,7 @@ class MailboxDashBoardController extends ReloadableController
     PresentationMailbox? mailbox
   ) {
     return mailbox != null &&
-      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems != false)) &&
+      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
       mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);

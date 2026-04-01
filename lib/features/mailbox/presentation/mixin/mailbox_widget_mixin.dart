@@ -87,20 +87,20 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      if (mailbox.myRights?.mayCreateChild != false)
+      if (mailbox.myRights?.mayCreateChild == true)
         MailboxActions.newSubfolder,
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
-      if (mailbox.myRights?.mayRename != false)
+      if (mailbox.myRights?.mayRename == true)
         MailboxActions.rename,
       if (mailbox.isTeamMailboxes)
         if (mailbox.isSubscribedMailbox)
           MailboxActions.disableMailbox
         else
           MailboxActions.enableMailbox,
-      if (mailbox.isTrash && mailbox.myRights?.mayRemoveItems != false)
+      if (mailbox.isTrash && mailbox.myRights?.mayRemoveItems == true)
         MailboxActions.emptyTrash,
-      if (mailbox.myRights?.mayDelete != false)
+      if (mailbox.myRights?.mayDelete == true)
         MailboxActions.delete,
     ];
   }
