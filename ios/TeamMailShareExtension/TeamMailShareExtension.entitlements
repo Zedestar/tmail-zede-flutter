@@ -4,7 +4,11 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.linagora.teammail</string>
+		<string>group.jambo.barua.app</string>
+	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)jambo.barua.app.keychain</string>
 	</array>
 </dict>
 </plist>

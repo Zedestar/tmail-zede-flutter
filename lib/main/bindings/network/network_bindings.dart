@@ -41,9 +41,10 @@ import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_throw
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
+import 'package:dio/io.dart';
+import 'dart:io' as dart_io;
 
 class NetworkBindings extends Bindings {
-
   @override
   void dependencies() {
     _bindingConnection();
@@ -65,8 +66,25 @@ class NetworkBindings extends Bindings {
     Get.put(BaseOptions(headers: headers));
   }
 
+  // void _bindingDio() {
+  //   Get.put(Dio(Get.find<BaseOptions>()));
+  //   Get.put(DioClient(Get.find<Dio>()));
+  //   Get.put(const FlutterAppAuth());
+  //   Get.put(AppAuthWebPlugin());
+  //   Get.put(OIDCHttpClient(Get.find<DioClient>()));
+  //   Get.put(AuthenticationClientBase());
+  //   Get.put(Dio(), tag: 'prompt');
+  // }
   void _bindingDio() {
-    Get.put(Dio(Get.find<BaseOptions>()));
+    final dio = Dio(Get.find<BaseOptions>());
+    if (BuildUtils.isDebugMode) {
+      (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+        final client = dart_io.HttpClient();
+        client.badCertificateCallback = (cert, host, port) => true;
+        return client;
+      };
+    }
+    Get.put(dio);
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(const FlutterAppAuth());
     Get.put(AppAuthWebPlugin());
@@ -93,10 +111,10 @@ class NetworkBindings extends Bindings {
     Get.put(DynamicUrlInterceptors());
     Get.put(AuthorizationInterceptors(
       dio,
-        Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
-        Get.find<AccountCacheManager>(),
-        Get.find<IOSSharingManager>(),
+      Get.find<AuthenticationClientBase>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<AccountCacheManager>(),
+      Get.find<IOSSharingManager>(),
     ));
     dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
     dio.interceptors.add(Get.find<AuthorizationInterceptors>());
@@ -108,8 +126,10 @@ class NetworkBindings extends Bindings {
 
   void _bindingApi() {
     Get.put(HttpClient(Get.find<Dio>()));
-    Get.put(DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
-    Get.put(DownloadManager(Get.find<DownloadClient>(), Get.find<DeviceInfoPlugin>()));
+    Get.put(
+        DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
+    Get.put(DownloadManager(
+        Get.find<DownloadClient>(), Get.find<DeviceInfoPlugin>()));
     Get.put(MailboxAPI(Get.find<HttpClient>(), Get.find<Uuid>()));
     Get.put(SessionAPI(Get.find<HttpClient>()));
     Get.put(ThreadAPI(Get.find<HttpClient>()));

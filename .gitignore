@@ -121,3 +121,8 @@ app.*.symbols
 messages_*.dart
 *.mocks.dart
 integration_test/test_bundle.dart
+
+
+# Firebase config files
+**/google-services.json
+**/GoogleService-Info.plist
